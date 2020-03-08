@@ -43,13 +43,16 @@ class InputButton extends StatelessWidget {
             FlatButton(
               child: Text("YES"),
               onPressed: () {
-                Provider.of<JobLog>(context, listen: false).addJob(Job(
+                Provider.of<JobLog>(context, listen: false)
+                    .addJob(Job(
                   type: jobType.type,
                   date: DateTime.now(),
-                ));
-                Navigator.of(context).pushReplacementNamed(
-                    RecordListScreen.routeName,
-                    arguments: jobType.type);
+                ))
+                    .then((_) {
+                  Navigator.of(context).pushReplacementNamed(
+                      RecordListScreen.routeName,
+                      arguments: jobType.type);
+                });
               },
             ),
             FlatButton(

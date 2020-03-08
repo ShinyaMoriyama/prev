@@ -9,7 +9,6 @@ class RecordListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(ModalRoute.of(context).settings.name);
     final jobType = ModalRoute.of(context).settings.arguments as int;
     Future<JobTypeItem> jobTypeItem =
         Provider.of<JobType>(context, listen: false).queryWhere(jobType);

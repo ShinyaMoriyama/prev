@@ -20,8 +20,13 @@ class JobLog with ChangeNotifier {
     return [..._jobs];
   }
 
-  void addJob(Job job) {
-    _jobs.add(job);
+  Future<void> addJob(Job job) async {
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnDate: job.date.toIso8601String(),
+      DatabaseHelper.columnType: job.type,
+    };
+    final id = await dbHelper.insert(DatabaseHelper.tableJobLog, row);
+    print('inserted row id: $id');
     notifyListeners();
   }
 
@@ -30,7 +35,7 @@ class JobLog with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<Job>> queryWhere(int jobType) async{
+  Future<List<Job>> queryWhere(int jobType) async {
     final allRows = await _query();
     final rowsWhere = allRows.where((job) => job.type == jobType).toList();
     rowsWhere.sort((a, b) => b.date.compareTo(a.date));
@@ -44,8 +49,8 @@ class JobLog with ChangeNotifier {
     return allRows
         .map(
           (item) => Job(
-            date: DateTime(item['date']),
-            type: int.parse(item['type']),
+            date: DateTime.parse(item['date']),
+            type: int.parse(item['type'].toString()),
           ),
         )
         .toList();
