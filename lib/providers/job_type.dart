@@ -49,9 +49,17 @@ class JobType with ChangeNotifier {
       await _insert(
           JobTypeItem(type: 0, name: 'some job', color: ColorSelect.Green));
     }
-    return await _query();
+    final rowsWhere = await _query();
+    rowsWhere.sort((a, b) => a.type.compareTo(b.type));
+    return rowsWhere;
   }
 
+  Future<List<JobTypeItem>> query() async {
+    final rowsWhere = await _query();
+    rowsWhere.sort((a, b) => a.type.compareTo(b.type));
+    return rowsWhere;
+  }
+  
   Future<JobTypeItem> queryWhere(int jobType) async {
     final allRows = await _query();
     print('in queryWhere');

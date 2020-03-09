@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/job_log.dart';
@@ -30,12 +31,25 @@ class RecordListScreen extends StatelessWidget {
                 child: const CircularProgressIndicator(),
               );
             default:
-              return ListView.separated(
-                itemBuilder: (context, i) =>
-                    JobLogItem(dataSnapshot.data[1][i], dataSnapshot.data[0]),
-                itemCount: dataSnapshot.data[1].length,
-                separatorBuilder: (context, _) => Divider(),
-              );
+              if (dataSnapshot.hasError) {
+                return AlertDialog(
+                  title: Text('Error occurred in record list!'),
+                  content: Text("Please try later."),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("OK"),
+                      onPressed: () => exit(0),
+                    ),
+                  ],
+                );
+              } else {
+                return ListView.separated(
+                  itemBuilder: (context, i) =>
+                      JobLogItem(dataSnapshot.data[1][i], dataSnapshot.data[0]),
+                  itemCount: dataSnapshot.data[1].length,
+                  separatorBuilder: (context, _) => Divider(),
+                );
+              }
           }
         },
       ),

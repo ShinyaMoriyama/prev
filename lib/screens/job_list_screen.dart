@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:last_time/screens/edit_job_screen.dart';
 import 'package:provider/provider.dart';
@@ -9,8 +10,11 @@ class JobListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var extractedJobType = Provider.of<jt.JobType>(context, listen: true).items;
-    extractedJobType.sort((a, b) => a.type.compareTo(b.type));
+    // This gets called even when back button is pushed.
+    // We can't move this to initState due to 'listen: true' though.
+    Future<List<jt.JobTypeItem>> extractedJobType =
+        Provider.of<jt.JobType>(context, listen: true).query();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit your job'),
@@ -23,10 +27,35 @@ class JobListScreen extends StatelessWidget {
           )
         ],
       ),
-      body: ListView.separated(
-        itemBuilder: (context, i) => JobTypeItem(extractedJobType[i]),
-        itemCount: extractedJobType.length,
-        separatorBuilder: (context, _) => Divider(),
+      body: FutureBuilder(
+        future: extractedJobType,
+        builder: (ctx, dataSnapshot) {
+          switch (dataSnapshot.connectionState) {
+            case ConnectionState.waiting:
+              return Center(
+                child: const CircularProgressIndicator(),
+              );
+            default:
+              if (dataSnapshot.hasError) {
+                return AlertDialog(
+                  title: Text('Error occurred in record list!'),
+                  content: Text("Please try later."),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("OK"),
+                      onPressed: () => exit(0),
+                    ),
+                  ],
+                );
+              } else {
+                return ListView.separated(
+                  itemBuilder: (context, i) => JobTypeItem(dataSnapshot.data[i]),
+                  itemCount: dataSnapshot.data.length,
+                  separatorBuilder: (context, _) => Divider(),
+                );
+              }
+          }
+        },
       ),
     );
   }

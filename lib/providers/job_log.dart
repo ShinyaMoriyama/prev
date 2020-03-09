@@ -30,11 +30,6 @@ class JobLog with ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteJob(DateTime date) {
-    _jobs.removeWhere((job) => job.date == date);
-    notifyListeners();
-  }
-
   Future<List<Job>> queryWhere(int jobType) async {
     final allRows = await _query();
     final rowsWhere = allRows.where((job) => job.type == jobType).toList();
@@ -54,5 +49,13 @@ class JobLog with ChangeNotifier {
           ),
         )
         .toList();
+  }
+
+  Future<void> deleteJob(DateTime date) async {
+    final key = DatabaseHelper.columnDate;
+    final rowsDeleted =
+        await dbHelper.delete(DatabaseHelper.tableJobLog, key, date.toIso8601String());
+    print('deleted $rowsDeleted row(s): row $rowsDeleted');
+    notifyListeners();
   }
 }
