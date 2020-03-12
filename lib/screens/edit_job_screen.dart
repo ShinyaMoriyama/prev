@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/job_type.dart';
@@ -16,14 +16,18 @@ class _EditJobScreenState extends State<EditJobScreen> {
 
   final _form = GlobalKey<FormState>();
 
+  var _isInit = true;
+
   var _initValues = {
     'name': '',
     'color': '',
   };
 
-  JobTypeItem _editedJobType;
+  Future<JobTypeItem> _editedJobType;
 
-  void _saveForm(BuildContext context, int jobTypeItemIndex) {
+  JobTypeItem _editedJobTypeForSave;
+
+  Future<void> _saveForm(BuildContext context, int jobTypeItemIndex) async {
     final isValid = _form.currentState.validate();
     if (!isValid) {
       return;
@@ -31,39 +35,57 @@ class _EditJobScreenState extends State<EditJobScreen> {
     _form.currentState.save();
     if (jobTypeItemIndex != null) {
       Provider.of<JobType>(context, listen: false)
-          .updateJobType(_editedJobType.type, _editedJobType);
+          .updateJobType(_editedJobTypeForSave)
+          .then((_) {
+        Navigator.of(context).pop();
+      });
     } else {
-      Provider.of<JobType>(context, listen: false).addJobType(_editedJobType);
+      Provider.of<JobType>(context, listen: false)
+          .addJobType(_editedJobTypeForSave)
+          .then((_) {
+        Navigator.of(context).pop();
+      });
     }
-    Navigator.of(context).pop();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (!_isInit) return;
+
+    final jobTypeItemType = ModalRoute.of(context).settings.arguments as int;
+
+    if (jobTypeItemType != null) {
+      _editedJobType = null;
+      _editedJobType = Provider.of<JobType>(context, listen: false)
+          .queryWhere(jobTypeItemType)
+          .then((value) {
+        _initValues = {
+          'name': value.name,
+          'color': value.color.name,
+        };
+        _isInit = false;
+        return value;
+      });
+    } else {
+      if (_editedJobType == null) {
+        _editedJobType = Provider.of<JobType>(context, listen: false)
+            .queryMaxType()
+            .then((value) {
+          _initValues = {
+            'name': '',
+            'color': '',
+          };
+          _isInit = false;
+          return JobTypeItem(type: value + 1, name: '', color: null);
+        });
+      }
+    }
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
     final jobTypeItemType = ModalRoute.of(context).settings.arguments as int;
-    if (jobTypeItemType != null) {
-      _editedJobType = null;
-      _editedJobType = Provider.of<JobType>(context, listen: false)
-          .items
-          .firstWhere((item) => item.type == jobTypeItemType);
-      _initValues = {
-        'name': _editedJobType.name,
-        'color': _editedJobType.color.name,
-      };
-    } else {
-      if (_editedJobType == null) {
-        final _maxJobType = Provider.of<JobType>(context, listen: false)
-            .items
-            .map((e) => e.type)
-            .reduce(max);
-        _editedJobType =
-            JobTypeItem(type: _maxJobType + 1, name: '', color: null);
-        _initValues = {
-          'name': '',
-          'color': '',
-        };
-      }
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -75,70 +97,96 @@ class _EditJobScreenState extends State<EditJobScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _form,
-          child: ListView(
-            children: <Widget>[
-              ListTile(
-                leading: CircleAvatar(
-                  child: Text(
-                    _editedJobType.color == null
-                        ? ''
-                        : _editedJobType.color.name,
-                    style: TextStyle(color: Colors.white),
+      body: FutureBuilder<JobTypeItem>(
+        future: _editedJobType,
+        builder: (ctx, dataSnapshot) {
+          switch (dataSnapshot.connectionState) {
+            case ConnectionState.waiting:
+              return Center(
+                child: const CircularProgressIndicator(),
+              );
+            default:
+              if (dataSnapshot.hasError) {
+                return AlertDialog(
+                  title: Text('Error occurred in record list!'),
+                  content: Text("Please try later."),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("OK"),
+                      onPressed: () => exit(0),
+                    ),
+                  ],
+                );
+              } else {
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Form(
+                    key: _form,
+                    child: ListView(
+                      children: <Widget>[
+                        ListTile(
+                          leading: CircleAvatar(
+                            child: Text(
+                              dataSnapshot.data.color == null
+                                  ? ''
+                                  : dataSnapshot.data.color.name,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            radius: 50,
+                            backgroundColor: dataSnapshot.data.color == null
+                                ? Colors.grey
+                                : dataSnapshot.data.color.object,
+                          ),
+                        ),
+                        TextFormField(
+                          initialValue: _initValues['name'],
+                          decoration: InputDecoration(labelText: 'Name'),
+                          textInputAction: TextInputAction.done,
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context).requestFocus(_nameFocusNode);
+                          },
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please provide a name.';
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _editedJobTypeForSave = JobTypeItem(
+                                type: dataSnapshot.data.type,
+                                name: value,
+                                color: dataSnapshot.data.color);
+                          },
+                        ),
+                        DropdownButtonFormField(
+                          items: ColorSelect.values.map((value) {
+                            return new DropdownMenuItem(
+                              value: value,
+                              child: new Text(value.name),
+                            );
+                          }).toList(),
+                          value: dataSnapshot.data.color ??
+                              dataSnapshot.data.color,
+                          onChanged: (selectedValue) {
+                            setState(() {
+                              dataSnapshot.data.color = selectedValue;
+                            });
+                          },
+                          decoration: InputDecoration(labelText: 'Color'),
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Please choose a color.';
+                            }
+                            return null;
+                          },
+                        )
+                      ],
+                    ),
                   ),
-                  radius: 50,
-                  backgroundColor: _editedJobType.color == null
-                      ? Colors.grey
-                      : _editedJobType.color.object,
-                ),
-              ),
-              TextFormField(
-                initialValue: _initValues['name'],
-                decoration: InputDecoration(labelText: 'Name'),
-                textInputAction: TextInputAction.done,
-                onFieldSubmitted: (_) {
-                  FocusScope.of(context).requestFocus(_nameFocusNode);
-                },
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Please provide a name.';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  _editedJobType = JobTypeItem(
-                      type: _editedJobType.type,
-                      name: value,
-                      color: _editedJobType.color);
-                },
-              ),
-              DropdownButtonFormField(
-                items: ColorSelect.values.map((value) {
-                  return new DropdownMenuItem(
-                    value: value,
-                    child: new Text(value.name),
-                  );
-                }).toList(),
-                value: _editedJobType.color ?? _editedJobType.color,
-                onChanged: (selectedValue) {
-                  setState(() {
-                    _editedJobType.color = selectedValue;
-                  });
-                },
-                decoration: InputDecoration(labelText: 'Color'),
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please choose a color.';
-                  }
-                  return null;
-                },
-              )
-            ],
-          ),
-        ),
+                );
+              }
+          }
+        },
       ),
     );
   }

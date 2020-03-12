@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:enum_to_string/enum_to_string.dart';
@@ -27,19 +28,11 @@ class JobType with ChangeNotifier {
     return [..._items];
   }
 
-  void addJobType(JobTypeItem item) {
-    _items.add(item);
-    notifyListeners();
-  }
-
-  void updateJobType(int type, JobTypeItem item) {
-    final index = _items.indexWhere((_item) => _item.type == type);
-    _items[index] = item;
-    notifyListeners();
-  }
-
-  void deleteJobType(int type) {
-    _items.removeWhere((items) => items.type == type);
+  Future<void> deleteJobType(int type) async{
+    final key = DatabaseHelper.columnType;
+    final rowsDeleted = await dbHelper.delete(
+        DatabaseHelper.tableJobType, key, type);
+    print('deleted $rowsDeleted row(s): row $rowsDeleted');
     notifyListeners();
   }
 
@@ -59,11 +52,35 @@ class JobType with ChangeNotifier {
     rowsWhere.sort((a, b) => a.type.compareTo(b.type));
     return rowsWhere;
   }
-  
+
   Future<JobTypeItem> queryWhere(int jobType) async {
     final allRows = await _query();
     print('in queryWhere');
     return allRows.firstWhere((item) => item.type == jobType);
+  }
+
+  Future<int> queryMaxType() async {
+    final allRows = await _query();
+    print('in queryMaxType');
+    return allRows.map((e) => e.type).reduce(max);
+  }
+
+  Future<void> addJobType(JobTypeItem item) async {
+    await _insert(item);
+    notifyListeners();
+  }
+
+  Future<void> updateJobType(JobTypeItem item) async {
+    final key = DatabaseHelper.columnType;
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnType: item.type,
+      DatabaseHelper.columnName: item.name,
+      DatabaseHelper.columnColor: item.color.name,
+    };
+    final rowsAffected =
+        await dbHelper.update(DatabaseHelper.tableJobType, key, row);
+    print('updated $rowsAffected row(s)');
+    notifyListeners();
   }
 
   Future<int> _count() async {
@@ -96,17 +113,6 @@ class JobType with ChangeNotifier {
               ),
             ))
         .toList();
-  }
-
-  Future<void> _update(JobTypeItem item) async {
-    final key = DatabaseHelper.columnType;
-    Map<String, dynamic> row = {
-      DatabaseHelper.columnName: item.name,
-      DatabaseHelper.columnColor: item.color.name,
-    };
-    final rowsAffected =
-        await dbHelper.update(DatabaseHelper.tableJobType, key, row);
-    print('updated $rowsAffected row(s)');
   }
 
   Future<void> _delete(int type) async {

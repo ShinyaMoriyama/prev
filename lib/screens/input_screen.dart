@@ -16,10 +16,10 @@ class _InputScreenState extends State<InputScreen> {
   Future<List<JobTypeItem>> _extractedJobType;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
     _extractedJobType =
         Provider.of<JobType>(context, listen: false).queryWhenInit();
+    super.didChangeDependencies();
   }
 
   @override
