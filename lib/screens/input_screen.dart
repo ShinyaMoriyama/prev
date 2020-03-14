@@ -16,15 +16,11 @@ class _InputScreenState extends State<InputScreen> {
   Future<List<JobTypeItem>> _extractedJobType;
 
   @override
-  void didChangeDependencies() {
+  Widget build(BuildContext context) {
+    // We can't move this to re-build when back button is pushed.
     _extractedJobType =
         Provider.of<JobType>(context, listen: false).queryWhenInit();
-    super.didChangeDependencies();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final deviceSize = MediaQuery.of(context).size;
+    print('build input_screen!!!!');
     final appBar = AppBar(
       title: Text('LastTime'),
       actions: <Widget>[
@@ -35,7 +31,6 @@ class _InputScreenState extends State<InputScreen> {
             }),
       ],
     );
-    final appBarHeight = appBar.preferredSize.height;
 
     return Scaffold(
       appBar: appBar,
@@ -75,18 +70,24 @@ class _InputScreenState extends State<InputScreen> {
                         ),
                       ),
                     ),
-                    SingleChildScrollView(
-                      child: Container(
-                        height: deviceSize.height - appBarHeight,
-                        width: deviceSize.width,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: dataSnapshot.data
-                              .map((jobType) => InputButton(jobType))
-                              .toList(),
-                        ),
-                      ),
+                    LayoutBuilder(
+                      builder: (BuildContext context,
+                          BoxConstraints viewportConstraints) {
+                        return SingleChildScrollView(
+                            child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: viewportConstraints.maxHeight,
+                            minWidth: viewportConstraints.maxWidth,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: dataSnapshot.data
+                                .map((jobType) => InputButton(jobType))
+                                .toList(),
+                          ),
+                        ));
+                      },
                     ),
                   ],
                 );

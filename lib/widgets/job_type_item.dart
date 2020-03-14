@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/job_type.dart' as jt;
+import '../providers/job_log.dart';
 import '../screens/edit_job_screen.dart';
 import '../models/color_select.dart';
 
@@ -35,14 +36,45 @@ class JobTypeItem extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
-                Provider.of<jt.JobType>(context, listen: false)
-                    .deleteJobType(jobType.type);
+                showAlert(context);
               },
               color: Theme.of(context).errorColor,
             ),
           ],
         ),
       ),
+    );
+  }
+
+  showAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete?'),
+          content: Text("Are You Sure Want To Proceed ?"),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("YES"),
+              onPressed: () {
+                Provider.of<jt.JobType>(context, listen: false)
+                    .deleteJobType(jobType.type).then((_) {
+                      Provider.of<JobLog>(context, listen: false).deleteJobWhereJobType(jobType.type);
+                    })
+                    .then((_) {
+                  Navigator.of(context).pop();
+                });
+              },
+            ),
+            FlatButton(
+              child: Text("BACK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

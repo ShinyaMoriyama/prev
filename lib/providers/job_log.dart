@@ -58,4 +58,12 @@ class JobLog with ChangeNotifier {
     print('deleted $rowsDeleted row(s): row $rowsDeleted');
     notifyListeners();
   }
+
+  Future<void> deleteJobWhereJobType(int type) async {
+    final key = DatabaseHelper.columnType;
+    final rowsDeleted =
+        await dbHelper.delete(DatabaseHelper.tableJobLog, key, type);
+    print('joblog deleted $rowsDeleted row(s): row $rowsDeleted');
+    notifyListeners();
+  }
 }

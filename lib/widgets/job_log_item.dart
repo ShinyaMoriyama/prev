@@ -31,13 +31,43 @@ class JobLogItem extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
-                Provider.of<JobLog>(context, listen: false).deleteJob(job.date);
+                showAlert(context);
               },
               color: Theme.of(context).errorColor,
             ),
           ],
         ),
       ),
+    );
+  }
+
+  showAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete?'),
+          content: Text("Are You Sure Want To Proceed ?"),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("YES"),
+              onPressed: () {
+                Provider.of<JobLog>(context, listen: false)
+                    .deleteJob(job.date)
+                    .then((_) {
+                  Navigator.of(context).pop();
+                });
+              },
+            ),
+            FlatButton(
+              child: Text("BACK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

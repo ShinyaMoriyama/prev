@@ -87,107 +87,137 @@ class _EditJobScreenState extends State<EditJobScreen> {
   Widget build(BuildContext context) {
     final jobTypeItemType = ModalRoute.of(context).settings.arguments as int;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit Job'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.save),
-            onPressed: () => _saveForm(context, jobTypeItemType),
-          ),
-        ],
-      ),
-      body: FutureBuilder<JobTypeItem>(
-        future: _editedJobType,
-        builder: (ctx, dataSnapshot) {
-          switch (dataSnapshot.connectionState) {
-            case ConnectionState.waiting:
-              return Center(
-                child: const CircularProgressIndicator(),
-              );
-            default:
-              if (dataSnapshot.hasError) {
-                return AlertDialog(
-                  title: Text('Error occurred in record list!'),
-                  content: Text("Please try later."),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text("OK"),
-                      onPressed: () => exit(0),
-                    ),
-                  ],
+    return WillPopScope(
+      onWillPop: showAlert,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Edit Job'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.save),
+              onPressed: () => _saveForm(context, jobTypeItemType),
+            ),
+          ],
+        ),
+        body: FutureBuilder<JobTypeItem>(
+          future: _editedJobType,
+          builder: (ctx, dataSnapshot) {
+            switch (dataSnapshot.connectionState) {
+              case ConnectionState.waiting:
+                return Center(
+                  child: const CircularProgressIndicator(),
                 );
-              } else {
-                return Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Form(
-                    key: _form,
-                    child: ListView(
-                      children: <Widget>[
-                        ListTile(
-                          leading: CircleAvatar(
-                            child: Text(
-                              dataSnapshot.data.color == null
-                                  ? ''
-                                  : dataSnapshot.data.color.name,
-                              style: TextStyle(color: Colors.white),
+              default:
+                if (dataSnapshot.hasError) {
+                  return AlertDialog(
+                    title: Text('Error occurred in record list!'),
+                    content: Text("Please try later."),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text("OK"),
+                        onPressed: () => exit(0),
+                      ),
+                    ],
+                  );
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Form(
+                      key: _form,
+                      child: ListView(
+                        children: <Widget>[
+                          ListTile(
+                            leading: CircleAvatar(
+                              child: Text(
+                                dataSnapshot.data.color == null
+                                    ? ''
+                                    : dataSnapshot.data.color.name,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              radius: 50,
+                              backgroundColor: dataSnapshot.data.color == null
+                                  ? Colors.grey
+                                  : dataSnapshot.data.color.object,
                             ),
-                            radius: 50,
-                            backgroundColor: dataSnapshot.data.color == null
-                                ? Colors.grey
-                                : dataSnapshot.data.color.object,
                           ),
-                        ),
-                        TextFormField(
-                          initialValue: _initValues['name'],
-                          decoration: InputDecoration(labelText: 'Name'),
-                          textInputAction: TextInputAction.done,
-                          onFieldSubmitted: (_) {
-                            FocusScope.of(context).requestFocus(_nameFocusNode);
-                          },
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Please provide a name.';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            _editedJobTypeForSave = JobTypeItem(
-                                type: dataSnapshot.data.type,
-                                name: value,
-                                color: dataSnapshot.data.color);
-                          },
-                        ),
-                        DropdownButtonFormField(
-                          items: ColorSelect.values.map((value) {
-                            return new DropdownMenuItem(
-                              value: value,
-                              child: new Text(value.name),
-                            );
-                          }).toList(),
-                          value: dataSnapshot.data.color ??
-                              dataSnapshot.data.color,
-                          onChanged: (selectedValue) {
-                            setState(() {
-                              dataSnapshot.data.color = selectedValue;
-                            });
-                          },
-                          decoration: InputDecoration(labelText: 'Color'),
-                          validator: (value) {
-                            if (value == null) {
-                              return 'Please choose a color.';
-                            }
-                            return null;
-                          },
-                        )
-                      ],
+                          TextFormField(
+                            initialValue: _initValues['name'],
+                            decoration: InputDecoration(labelText: 'Name'),
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted: (_) {
+                              FocusScope.of(context)
+                                  .requestFocus(_nameFocusNode);
+                            },
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please provide a name.';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _editedJobTypeForSave = JobTypeItem(
+                                  type: dataSnapshot.data.type,
+                                  name: value,
+                                  color: dataSnapshot.data.color);
+                            },
+                          ),
+                          DropdownButtonFormField(
+                            items: ColorSelect.values.map((value) {
+                              return new DropdownMenuItem(
+                                value: value,
+                                child: new Text(value.name),
+                              );
+                            }).toList(),
+                            value: dataSnapshot.data.color ??
+                                dataSnapshot.data.color,
+                            onChanged: (selectedValue) {
+                              setState(() {
+                                dataSnapshot.data.color = selectedValue;
+                              });
+                            },
+                            decoration: InputDecoration(labelText: 'Color'),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please choose a color.';
+                              }
+                              return null;
+                            },
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              }
-          }
-        },
+                  );
+                }
+            }
+          },
+        ),
       ),
     );
+  }
+
+  Future<bool> showAlert() async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Back?'),
+          content: Text("Unsaved data will be lost."),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("YES"),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+            FlatButton(
+              child: Text("NO"),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+          ],
+        );
+      },
+    ) ?? false;
   }
 }
