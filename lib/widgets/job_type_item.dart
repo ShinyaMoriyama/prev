@@ -4,6 +4,7 @@ import '../providers/job_type.dart' as jt;
 import '../providers/job_log.dart';
 import '../screens/edit_job_screen.dart';
 import '../models/color_select.dart';
+import '../localization/app_localizations.dart';
 
 class JobTypeItem extends StatelessWidget {
   final jt.JobTypeItem jobType;
@@ -51,8 +52,8 @@ class JobTypeItem extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Delete?'),
-          content: Text("Are You Sure Want To Proceed ?"),
+          title: Text(AppLocalizations.of(context).translate('Deletion')),
+          content: Text(AppLocalizations.of(context).translate('Are You Sure Want To Delete It?')),
           actions: <Widget>[
             FlatButton(
               child: Text("YES"),

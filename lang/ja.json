@@ -1,0 +1,19 @@
+{
+    "Edit Job": "お仕事の登録",
+    "Error occurred.": "エラーが発生しました。",
+    "Please try later.": "もう一度試してください。",
+    "name": "名前",
+    "Please provide a name.": "名前を入力してください。",
+    "Color": "色",
+    "Please choose a color.": "色を選んでください。",
+    "Back?": "前の画面に戻りますか？",
+    "Unsaved data will be lost.": "入力中のデータは消えます。",
+    "Your jobs list": "お仕事の一覧",
+    "Your records": "あなたの記録",
+    "Are You Sure Want To Record?": "記録しますか？",
+    "NO(Just Looking)": "NO(見るだけ)",
+    "Deletion": "削除",
+    "Are You Sure Want To Delete It?": "本当に消しますか？",
+    " is done?": " は終わりましたか？",
+    "some job": "あるお仕事"
+}

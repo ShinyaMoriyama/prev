@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/job_type.dart';
 import '../models/color_select.dart';
+import '../localization/app_localizations.dart';
 
 class EditJobScreen extends StatefulWidget {
   static const routeName = 'edit_job';
@@ -91,7 +92,7 @@ class _EditJobScreenState extends State<EditJobScreen> {
       onWillPop: showAlert,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Edit Job'),
+          title: Text(AppLocalizations.of(context).translate('Edit Job')),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.save),
@@ -110,8 +111,8 @@ class _EditJobScreenState extends State<EditJobScreen> {
               default:
                 if (dataSnapshot.hasError) {
                   return AlertDialog(
-                    title: Text('Error occurred in record list!'),
-                    content: Text("Please try later."),
+                    title: Text(AppLocalizations.of(context).translate('Error occurred.')),
+                    content: Text(AppLocalizations.of(context).translate("Please try later.")),
                     actions: <Widget>[
                       FlatButton(
                         child: Text("OK"),
@@ -142,7 +143,7 @@ class _EditJobScreenState extends State<EditJobScreen> {
                           ),
                           TextFormField(
                             initialValue: _initValues['name'],
-                            decoration: InputDecoration(labelText: 'Name'),
+                            decoration: InputDecoration(labelText: AppLocalizations.of(context).translate('Name')),
                             textInputAction: TextInputAction.done,
                             onFieldSubmitted: (_) {
                               FocusScope.of(context)
@@ -150,7 +151,7 @@ class _EditJobScreenState extends State<EditJobScreen> {
                             },
                             validator: (value) {
                               if (value.isEmpty) {
-                                return 'Please provide a name.';
+                                return AppLocalizations.of(context).translate('Please provide a name.');
                               }
                               return null;
                             },
@@ -175,10 +176,10 @@ class _EditJobScreenState extends State<EditJobScreen> {
                                 dataSnapshot.data.color = selectedValue;
                               });
                             },
-                            decoration: InputDecoration(labelText: 'Color'),
+                            decoration: InputDecoration(labelText: AppLocalizations.of(context).translate('Color')),
                             validator: (value) {
                               if (value == null) {
-                                return 'Please choose a color.';
+                                return AppLocalizations.of(context).translate('Please choose a color.');
                               }
                               return null;
                             },
@@ -200,8 +201,8 @@ class _EditJobScreenState extends State<EditJobScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Back?'),
-          content: Text("Unsaved data will be lost."),
+          title: Text(AppLocalizations.of(context).translate('Back?')),
+          content: Text(AppLocalizations.of(context).translate('Unsaved data will be lost.')),
           actions: <Widget>[
             FlatButton(
               child: Text("YES"),

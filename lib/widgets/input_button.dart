@@ -4,6 +4,7 @@ import '../screens/record_list_screen.dart';
 import '../providers/job_log.dart';
 import '../providers/job_type.dart';
 import '../models/color_select.dart';
+import '../localization/app_localizations.dart';
 
 class InputButton extends StatelessWidget {
   final JobTypeItem jobType;
@@ -37,8 +38,8 @@ class InputButton extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Done?'),
-          content: Text("Are You Sure Want To Proceed ?"),
+          title: Text('${jobType.name}' + AppLocalizations.of(context).translate(' is done?')),
+          content: Text(AppLocalizations.of(context).translate('Are You Sure Want To Record?')),
           actions: <Widget>[
             FlatButton(
               child: Text("YES"),
@@ -56,7 +57,7 @@ class InputButton extends StatelessWidget {
               },
             ),
             FlatButton(
-              child: Text("NO(Just Looking)"),
+              child: Text(AppLocalizations.of(context).translate('NO(Just Looking)')),
               onPressed: () {
                 Navigator.of(context).pushReplacementNamed(
                     RecordListScreen.routeName,

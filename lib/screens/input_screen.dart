@@ -4,6 +4,7 @@ import 'package:last_time/screens/job_list_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/job_type.dart';
 import '../widgets/input_button.dart';
+import '../localization/app_localizations.dart';
 
 class InputScreen extends StatefulWidget {
   static const routeName = '/input';
@@ -17,10 +18,10 @@ class _InputScreenState extends State<InputScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final firstJobName = AppLocalizations.of(context).translate('some job');
     // We can't move this to re-build when back button is pushed.
-    _extractedJobType =
-        Provider.of<JobType>(context, listen: false).queryWhenInit();
-    print('build input_screen!!!!');
+    _extractedJobType = Provider.of<JobType>(context, listen: false)
+        .queryWhenInit(firstJobName);
     final appBar = AppBar(
       title: Text('LastTime'),
       actions: <Widget>[
@@ -45,8 +46,10 @@ class _InputScreenState extends State<InputScreen> {
             default:
               if (dataSnapshot.hasError) {
                 return AlertDialog(
-                  title: Text('Error occurred!'),
-                  content: Text("Please try later."),
+                  title: Text(AppLocalizations.of(context)
+                      .translate('Error occurred.')),
+                  content: Text(AppLocalizations.of(context)
+                      .translate("Please try later.")),
                   actions: <Widget>[
                     FlatButton(
                       child: Text("OK"),

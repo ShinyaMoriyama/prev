@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:last_time/localization/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../providers/job_log.dart';
 import '../providers/job_type.dart';
@@ -46,8 +47,8 @@ class JobLogItem extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Delete?'),
-          content: Text("Are You Sure Want To Proceed ?"),
+          title: Text(AppLocalizations.of(context).translate('Deletion')),
+          content: Text(AppLocalizations.of(context).translate('Are You Sure Want To Delete It?')),
           actions: <Widget>[
             FlatButton(
               child: Text("YES"),

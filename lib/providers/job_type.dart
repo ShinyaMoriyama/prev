@@ -20,14 +20,6 @@ class JobTypeItem {
 class JobType with ChangeNotifier {
   final DatabaseHelper dbHelper = DatabaseHelper.instance;
 
-  List<JobTypeItem> _items = [
-    JobTypeItem(type: 0, name: 'a job', color: ColorSelect.Blue)
-  ];
-
-  List<JobTypeItem> get items {
-    return [..._items];
-  }
-
   Future<void> deleteJobType(int type) async{
     final key = DatabaseHelper.columnType;
     final rowsDeleted = await dbHelper.delete(
@@ -36,11 +28,11 @@ class JobType with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<JobTypeItem>> queryWhenInit() async {
+  Future<List<JobTypeItem>> queryWhenInit(String name) async {
     int counts = await _count();
     if (counts == 0) {
       await _insert(
-          JobTypeItem(type: 0, name: 'some job', color: ColorSelect.Green));
+          JobTypeItem(type: 0, name: name, color: ColorSelect.Green));
     }
     final rowsWhere = await _query();
     rowsWhere.sort((a, b) => a.type.compareTo(b.type));
@@ -113,12 +105,5 @@ class JobType with ChangeNotifier {
               ),
             ))
         .toList();
-  }
-
-  Future<void> _delete(int type) async {
-    final key = DatabaseHelper.columnType;
-    final rowsDeleted =
-        await dbHelper.delete(DatabaseHelper.tableJobType, key, type);
-    print('deleted $rowsDeleted row(s): row $rowsDeleted');
   }
 }

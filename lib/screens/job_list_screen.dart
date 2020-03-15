@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:last_time/localization/app_localizations.dart';
 import 'package:last_time/screens/edit_job_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/job_type.dart' as jt;
@@ -17,7 +18,7 @@ class JobListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit your job'),
+        title: Text(AppLocalizations.of(context).translate('Your jobs list')),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.add),
@@ -38,8 +39,8 @@ class JobListScreen extends StatelessWidget {
             default:
               if (dataSnapshot.hasError) {
                 return AlertDialog(
-                  title: Text('Error occurred in record list!'),
-                  content: Text("Please try later."),
+                  title: Text(AppLocalizations.of(context).translate('Error occurred.')),
+                  content: Text(AppLocalizations.of(context).translate('Please try later.')),
                   actions: <Widget>[
                     FlatButton(
                       child: Text("OK"),
