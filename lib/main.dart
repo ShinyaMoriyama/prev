@@ -1,3 +1,5 @@
+import 'dart:ui';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -9,7 +11,17 @@ import './screens/job_list_screen.dart';
 import './screens/edit_job_screen.dart';
 import './localization/app_localizations.dart';
 
-void main() => runApp(MyApp());
+void main() async{
+  // Workaround to 'The getter 'languageCode' was called on null flutter for iOS"
+  // https://github.com/flutter/flutter/issues/39032
+  WidgetsFlutterBinding.ensureInitialized();
+  while (window.locale == null) {
+    await Future.delayed(const Duration(milliseconds: 1));
+  }
+  final locale = window.locale;
+  Intl.systemLocale = locale.toString();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -44,7 +56,6 @@ class MyApp extends StatelessWidget {
         // Returns a locale which will be used by the app
         localeResolutionCallback: (locale, supportedLocales) {
           if (locale == null) {
-            debugPrint("*language locale is null!!!");
             return supportedLocales.first;
           }
           // Check if the current device locale is supported
@@ -53,7 +64,6 @@ class MyApp extends StatelessWidget {
               return supportedLocale;
             }
           }
-
           // If the locale of the device is not supported, use the first one
           // from the list (English, in this case).
           return supportedLocales.first;

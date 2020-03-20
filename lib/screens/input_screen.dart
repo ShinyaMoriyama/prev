@@ -18,8 +18,10 @@ class _InputScreenState extends State<InputScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('AppLocalizations: ${AppLocalizations.of(context).locale}');
     final firstJobName = AppLocalizations.of(context).translate('some job');
     // We can't move this to re-build when back button is pushed.
+    print('JobType: $firstJobName');
     _extractedJobType = Provider.of<JobType>(context, listen: false)
         .queryWhenInit(firstJobName);
     final appBar = AppBar(
