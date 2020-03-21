@@ -15,11 +15,13 @@ class JobLogItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(
-        DateFormat('dd/MM/yyyy hh:mm').format(job.date),
+        // DateFormat('dd/MM/yyyy hh:mm').format(job.date),
+        DateFormat.yMd().format(job.date),
       ),
       leading: CircleAvatar(
         child: Text(
-          DateFormat('dd/MM').format(job.date),
+          // DateFormat('dd/MM').format(job.date),
+          DateFormat.Md().format(job.date),
           style: TextStyle(color: Colors.white),
         ),
         radius: 50,
