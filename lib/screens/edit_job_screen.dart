@@ -111,8 +111,10 @@ class _EditJobScreenState extends State<EditJobScreen> {
               default:
                 if (dataSnapshot.hasError) {
                   return AlertDialog(
-                    title: Text(AppLocalizations.of(context).translate('Error occurred.')),
-                    content: Text(AppLocalizations.of(context).translate("Please try later.")),
+                    title: Text(AppLocalizations.of(context)
+                        .translate('Error occurred.')),
+                    content: Text(AppLocalizations.of(context)
+                        .translate("Please try later.")),
                     actions: <Widget>[
                       FlatButton(
                         child: Text("OK"),
@@ -143,7 +145,9 @@ class _EditJobScreenState extends State<EditJobScreen> {
                           ),
                           TextFormField(
                             initialValue: _initValues['name'],
-                            decoration: InputDecoration(labelText: AppLocalizations.of(context).translate('Name')),
+                            decoration: InputDecoration(
+                                labelText: AppLocalizations.of(context)
+                                    .translate('Name')),
                             textInputAction: TextInputAction.done,
                             onFieldSubmitted: (_) {
                               FocusScope.of(context)
@@ -151,7 +155,8 @@ class _EditJobScreenState extends State<EditJobScreen> {
                             },
                             validator: (value) {
                               if (value.isEmpty) {
-                                return AppLocalizations.of(context).translate('Please provide a name.');
+                                return AppLocalizations.of(context)
+                                    .translate('Please provide a name.');
                               }
                               return null;
                             },
@@ -166,7 +171,8 @@ class _EditJobScreenState extends State<EditJobScreen> {
                             items: ColorSelect.values.map((value) {
                               return new DropdownMenuItem(
                                 value: value,
-                                child: new Text(value.name),
+                                child: new Text(AppLocalizations.of(context)
+                                    .translate(value.name)),
                               );
                             }).toList(),
                             value: dataSnapshot.data.color ??
@@ -176,10 +182,13 @@ class _EditJobScreenState extends State<EditJobScreen> {
                                 dataSnapshot.data.color = selectedValue;
                               });
                             },
-                            decoration: InputDecoration(labelText: AppLocalizations.of(context).translate('Color')),
+                            decoration: InputDecoration(
+                                labelText: AppLocalizations.of(context)
+                                    .translate('Color')),
                             validator: (value) {
                               if (value == null) {
-                                return AppLocalizations.of(context).translate('Please choose a color.');
+                                return AppLocalizations.of(context)
+                                    .translate('Please choose a color.');
                               }
                               return null;
                             },
@@ -198,27 +207,29 @@ class _EditJobScreenState extends State<EditJobScreen> {
 
   Future<bool> showAlert() async {
     return await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(AppLocalizations.of(context).translate('Back?')),
-          content: Text(AppLocalizations.of(context).translate('Unsaved data will be lost.')),
-          actions: <Widget>[
-            FlatButton(
-              child: Text("YES"),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-            ),
-            FlatButton(
-              child: Text("NO"),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-          ],
-        );
-      },
-    ) ?? false;
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(AppLocalizations.of(context).translate('Back?')),
+              content: Text(AppLocalizations.of(context)
+                  .translate('Unsaved data will be lost.')),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("YES"),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+                FlatButton(
+                  child: Text("NO"),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
   }
 }

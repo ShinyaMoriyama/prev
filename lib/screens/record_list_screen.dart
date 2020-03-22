@@ -49,6 +49,7 @@ class RecordListScreen extends StatelessWidget {
                       JobLogItem(dataSnapshot.data[1][i], dataSnapshot.data[0]),
                   itemCount: dataSnapshot.data[1].length,
                   separatorBuilder: (context, _) => Divider(),
+                  padding: const EdgeInsets.only(top: 10),
                 );
               }
           }

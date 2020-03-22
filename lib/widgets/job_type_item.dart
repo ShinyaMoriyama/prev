@@ -52,17 +52,18 @@ class JobTypeItem extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context).translate('Deletion')),
-          content: Text(AppLocalizations.of(context).translate('Are You Sure Want To Delete It?')),
+          title: Text(AppLocalizations.of(context)
+              .translate('Are You Sure Want To Delete It?')),
           actions: <Widget>[
             FlatButton(
               child: Text("YES"),
               onPressed: () {
                 Provider.of<jt.JobType>(context, listen: false)
-                    .deleteJobType(jobType.type).then((_) {
-                      Provider.of<JobLog>(context, listen: false).deleteJobWhereJobType(jobType.type);
-                    })
+                    .deleteJobType(jobType.type)
                     .then((_) {
+                  Provider.of<JobLog>(context, listen: false)
+                      .deleteJobWhereJobType(jobType.type);
+                }).then((_) {
                   Navigator.of(context).pop();
                 });
               },

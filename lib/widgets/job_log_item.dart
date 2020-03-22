@@ -13,15 +13,40 @@ class JobLogItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String getDateText(DateTime date) {
+      final DateTime now = DateTime.now();
+      DateTime checkDate = DateTime(now.year, now.month, now.day - 7);
+      String dateStr;
+      if (date.isBefore(checkDate)) {
+        dateStr = DateFormat.Md().format(job.date);
+      } else if (date.isBefore(checkDate.add(Duration(days: 1)))) {
+        dateStr = AppLocalizations.of(context).translate('7d');
+      } else if (date.isBefore(checkDate.add(Duration(days: 2)))) {
+        dateStr = AppLocalizations.of(context).translate('6d');
+      } else if (date.isBefore(checkDate.add(Duration(days: 3)))) {
+        dateStr = AppLocalizations.of(context).translate('5d');
+      } else if (date.isBefore(checkDate.add(Duration(days: 4)))) {
+        dateStr = AppLocalizations.of(context).translate('4d');
+      } else if (date.isBefore(checkDate.add(Duration(days: 5)))) {
+        dateStr = AppLocalizations.of(context).translate('3d');
+      } else if (date.isBefore(checkDate.add(Duration(days: 6)))) {
+        dateStr = AppLocalizations.of(context).translate('2d');
+      } else if (date.isBefore(checkDate.add(Duration(days: 7)))) {
+        dateStr = AppLocalizations.of(context).translate('1d');
+      } else {
+        dateStr = AppLocalizations.of(context).translate('Today');
+      }
+      return dateStr;
+    }
+
     return ListTile(
       title: Text(
-        // DateFormat('dd/MM/yyyy hh:mm').format(job.date),
-        DateFormat.yMd().format(job.date),
+        DateFormat.yMd().add_Hm().format(job.date),
       ),
       leading: CircleAvatar(
         child: Text(
-          // DateFormat('dd/MM').format(job.date),
-          DateFormat.Md().format(job.date),
+          // DateFormat.Md().format(job.date),
+          getDateText(job.date),
           style: TextStyle(color: Colors.white),
         ),
         radius: 50,
@@ -49,8 +74,8 @@ class JobLogItem extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context).translate('Deletion')),
-          content: Text(AppLocalizations.of(context).translate('Are You Sure Want To Delete It?')),
+          title: Text(AppLocalizations.of(context)
+              .translate('Are You Sure Want To Delete It?')),
           actions: <Widget>[
             FlatButton(
               child: Text("YES"),

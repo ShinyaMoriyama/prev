@@ -39,7 +39,6 @@ class InputButton extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('${jobType.name}' + AppLocalizations.of(context).translate(' is done?')),
-          content: Text(AppLocalizations.of(context).translate('Are You Sure Want To Record?')),
           actions: <Widget>[
             FlatButton(
               child: Text("YES"),

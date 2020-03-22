@@ -39,8 +39,10 @@ class JobListScreen extends StatelessWidget {
             default:
               if (dataSnapshot.hasError) {
                 return AlertDialog(
-                  title: Text(AppLocalizations.of(context).translate('Error occurred.')),
-                  content: Text(AppLocalizations.of(context).translate('Please try later.')),
+                  title: Text(AppLocalizations.of(context)
+                      .translate('Error occurred.')),
+                  content: Text(AppLocalizations.of(context)
+                      .translate('Please try later.')),
                   actions: <Widget>[
                     FlatButton(
                       child: Text("OK"),
@@ -50,9 +52,11 @@ class JobListScreen extends StatelessWidget {
                 );
               } else {
                 return ListView.separated(
-                  itemBuilder: (context, i) => JobTypeItem(dataSnapshot.data[i]),
+                  itemBuilder: (context, i) =>
+                      JobTypeItem(dataSnapshot.data[i]),
                   itemCount: dataSnapshot.data.length,
                   separatorBuilder: (context, _) => Divider(),
+                  padding: const EdgeInsets.only(top: 10),
                 );
               }
           }
