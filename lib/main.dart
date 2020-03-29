@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +12,7 @@ import './screens/job_list_screen.dart';
 import './screens/edit_job_screen.dart';
 import './localization/app_localizations.dart';
 
-void main() async{
+void main() async {
   // Workaround to 'The getter 'languageCode' was called on null flutter for iOS"
   // https://github.com/flutter/flutter/issues/39032
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +21,7 @@ void main() async{
   }
   final locale = window.locale;
   Intl.systemLocale = locale.toString();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(MyApp());
 }
 
