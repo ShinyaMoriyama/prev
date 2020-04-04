@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
   
-  static final _databaseName = "LastTime.db";
+  static final _databaseName = "Prev.db";
   static final _databaseVersion = 1;
 
   static final tableJobLog = 'job_log';

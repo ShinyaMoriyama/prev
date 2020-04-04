@@ -16,7 +16,7 @@
 		<string>en</string>
 	</array>
 	<key>CFBundleName</key>
-	<string>LastTime</string>
+	<string>Prev</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:last_time/localization/app_localizations.dart';
 import 'package:provider/provider.dart';
+import '../localization/app_localizations.dart';
 import '../providers/job_log.dart';
 import '../providers/job_type.dart';
 import '../widgets/job_log_item.dart';

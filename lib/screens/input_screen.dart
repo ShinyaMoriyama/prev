@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:last_time/screens/job_list_screen.dart';
 import 'package:provider/provider.dart';
+import '../screens/job_list_screen.dart';
 import '../providers/job_type.dart';
 import '../widgets/input_button.dart';
 import '../localization/app_localizations.dart';
@@ -25,7 +25,7 @@ class _InputScreenState extends State<InputScreen> {
     _extractedJobType = Provider.of<JobType>(context, listen: false)
         .queryWhenInit(firstJobName);
     final appBar = AppBar(
-      title: Text('LastTime'),
+      title: Text('Prev'),
       actions: <Widget>[
         IconButton(
             icon: Icon(Icons.settings),
