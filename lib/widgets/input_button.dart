@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../screens/record_list_screen.dart';
 import '../providers/job_log.dart';
 import '../providers/job_type.dart';
 import '../models/color_select.dart';
 import '../localization/app_localizations.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class InputButton extends StatelessWidget {
   final JobTypeItem jobType;
@@ -33,12 +37,33 @@ class InputButton extends StatelessWidget {
     );
   }
 
+  Future<void> _scheduleNotification(String message, int id) async {
+    // variables on android is dummy for now
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'your other channel id',
+      'your other channel name',
+      'your other channel description',
+    );
+    var iOSPlatformChannelSpecifics =
+        IOSNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.periodicallyShow(
+        id,
+        null,
+        message,
+        RepeatInterval.EveryMinute,
+        platformChannelSpecifics);
+  }
+
   showAlert(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        String message = '${jobType.name}' +
+            AppLocalizations.of(context).translate(' is done?');
         return AlertDialog(
-          title: Text('${jobType.name}' + AppLocalizations.of(context).translate(' is done?')),
+          title: Text(message),
           actions: <Widget>[
             FlatButton(
               child: Text("YES"),
@@ -53,10 +78,12 @@ class InputButton extends StatelessWidget {
                       RecordListScreen.routeName,
                       arguments: jobType.type);
                 });
+                _scheduleNotification(message, jobType.type);
               },
             ),
             FlatButton(
-              child: Text(AppLocalizations.of(context).translate('NO(Just Looking)')),
+              child: Text(
+                  AppLocalizations.of(context).translate('NO(Just Looking)')),
               onPressed: () {
                 Navigator.of(context).pushReplacementNamed(
                     RecordListScreen.routeName,

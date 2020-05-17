@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import './providers/job_log.dart';
 import './providers/job_type.dart';
 import './screens/input_screen.dart';
@@ -11,6 +12,27 @@ import './screens/record_list_screen.dart';
 import './screens/job_list_screen.dart';
 import './screens/edit_job_screen.dart';
 import './localization/app_localizations.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+NotificationAppLaunchDetails notificationAppLaunchDetails;
+
+Future<void> initializeNotification() async {
+  // needed if you intend to initialize in the `main` function
+  WidgetsFlutterBinding.ensureInitialized();
+
+  notificationAppLaunchDetails =
+      await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+  var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+  var initializationSettingsIOS = IOSInitializationSettings(
+    requestSoundPermission: true,
+    requestBadgePermission: true,
+    requestAlertPermission: true,
+  );
+  var initializationSettings = InitializationSettings(
+      initializationSettingsAndroid, initializationSettingsIOS);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+}
 
 void main() async {
   // Workaround to 'The getter 'languageCode' was called on null flutter for iOS"
@@ -22,6 +44,7 @@ void main() async {
   final locale = window.locale;
   Intl.systemLocale = locale.toString();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await initializeNotification();
   runApp(MyApp());
 }
 

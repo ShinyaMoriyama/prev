@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../providers/job_type.dart' as jt;
 import '../providers/job_log.dart';
 import '../screens/edit_job_screen.dart';
 import '../models/color_select.dart';
 import '../localization/app_localizations.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class JobTypeItem extends StatelessWidget {
   final jt.JobTypeItem jobType;
@@ -38,6 +42,7 @@ class JobTypeItem extends StatelessWidget {
               icon: Icon(Icons.delete),
               onPressed: () {
                 showAlert(context);
+                flutterLocalNotificationsPlugin.cancel(jobType.type);
               },
               color: Theme.of(context).errorColor,
             ),
