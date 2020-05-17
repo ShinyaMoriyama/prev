@@ -42,7 +42,6 @@ class JobTypeItem extends StatelessWidget {
               icon: Icon(Icons.delete),
               onPressed: () {
                 showAlert(context);
-                flutterLocalNotificationsPlugin.cancel(jobType.type);
               },
               color: Theme.of(context).errorColor,
             ),
@@ -70,6 +69,7 @@ class JobTypeItem extends StatelessWidget {
                       .deleteJobWhereJobType(jobType.type);
                 }).then((_) {
                   Navigator.of(context).pop();
+                  flutterLocalNotificationsPlugin.cancel(jobType.type);
                 });
               },
             ),
