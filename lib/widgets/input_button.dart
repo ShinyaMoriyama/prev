@@ -52,7 +52,7 @@ class InputButton extends StatelessWidget {
         id,
         null,
         message,
-        RepeatInterval.EveryMinute,
+        RepeatInterval.Daily,
         platformChannelSpecifics);
   }
 

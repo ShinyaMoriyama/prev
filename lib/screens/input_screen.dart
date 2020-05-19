@@ -22,7 +22,7 @@ class _InputScreenState extends State<InputScreen> {
     final firstJobName = AppLocalizations.of(context).translate('some job');
     // We can't move this to re-build when back button is pushed.
     print('JobType: $firstJobName');
-    _extractedJobType = Provider.of<JobType>(context, listen: false)
+    _extractedJobType = Provider.of<JobType>(context, listen: true)
         .queryWhenInit(firstJobName);
     final appBar = AppBar(
       title: Text('Prev'),
