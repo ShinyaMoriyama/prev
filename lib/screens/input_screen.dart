@@ -7,28 +7,30 @@ import '../widgets/input_button.dart';
 import '../localization/app_localizations.dart';
 
 class InputScreen extends StatefulWidget {
+  const InputScreen({super.key});
+
   static const routeName = '/input';
 
   @override
-  _InputScreenState createState() => _InputScreenState();
+  State<InputScreen> createState() => _InputScreenState();
 }
 
 class _InputScreenState extends State<InputScreen> {
-  Future<List<JobTypeItem>> _extractedJobType;
+  late Future<List<JobTypeItem>> _extractedJobType;
 
   @override
   Widget build(BuildContext context) {
-    print('AppLocalizations: ${AppLocalizations.of(context).locale}');
-    final firstJobName = AppLocalizations.of(context).translate('some job');
+    debugPrint('AppLocalizations: ${AppLocalizations.of(context)!.locale}');
+    final firstJobName = AppLocalizations.of(context)!.translate('some job');
     // We can't move this to re-build when back button is pushed.
-    print('JobType: $firstJobName');
-    _extractedJobType = Provider.of<JobType>(context, listen: true)
-        .queryWhenInit(firstJobName);
+    debugPrint('JobType: $firstJobName');
+    _extractedJobType =
+        Provider.of<JobType>(context, listen: true).queryWhenInit(firstJobName);
     final appBar = AppBar(
-      title: Text('Prev'),
+      title: const Text('Prev'),
       actions: <Widget>[
         IconButton(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             onPressed: () {
               Navigator.of(context).pushNamed(JobListScreen.routeName);
             }),
@@ -42,19 +44,19 @@ class _InputScreenState extends State<InputScreen> {
         builder: (ctx, dataSnapshot) {
           switch (dataSnapshot.connectionState) {
             case ConnectionState.waiting:
-              return Center(
-                child: const CircularProgressIndicator(),
+              return const Center(
+                child: CircularProgressIndicator(),
               );
             default:
               if (dataSnapshot.hasError) {
                 return AlertDialog(
-                  title: Text(AppLocalizations.of(context)
+                  title: Text(AppLocalizations.of(context)!
                       .translate('Error occurred.')),
-                  content: Text(AppLocalizations.of(context)
+                  content: Text(AppLocalizations.of(context)!
                       .translate("Please try later.")),
                   actions: <Widget>[
-                    FlatButton(
-                      child: Text("OK"),
+                    ElevatedButton(
+                      child: const Text("OK"),
                       onPressed: () => exit(0),
                     ),
                   ],
@@ -71,7 +73,7 @@ class _InputScreenState extends State<InputScreen> {
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          stops: [0, 1],
+                          stops: const [0, 1],
                         ),
                       ),
                     ),
@@ -87,7 +89,7 @@ class _InputScreenState extends State<InputScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
-                            children: dataSnapshot.data
+                            children: dataSnapshot.data!
                                 .map((jobType) => InputButton(jobType))
                                 .toList(),
                           ),

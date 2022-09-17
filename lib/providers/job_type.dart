@@ -11,28 +11,27 @@ class JobTypeItem {
   ColorSelect color;
 
   JobTypeItem({
-    @required this.type,
-    @required this.name,
-    @required this.color,
+    required this.type,
+    required this.name,
+    required this.color,
   });
 }
 
 class JobType with ChangeNotifier {
   final DatabaseHelper dbHelper = DatabaseHelper.instance;
 
-  Future<void> deleteJobType(int type) async{
+  Future<void> deleteJobType(int type) async {
     final key = DatabaseHelper.columnType;
-    final rowsDeleted = await dbHelper.delete(
-        DatabaseHelper.tableJobType, key, type);
-    print('deleted $rowsDeleted row(s): row $rowsDeleted');
+    final rowsDeleted =
+        await dbHelper.delete(DatabaseHelper.tableJobType, key, type);
+    debugPrint('deleted $rowsDeleted row(s): row $rowsDeleted');
     notifyListeners();
   }
 
   Future<List<JobTypeItem>> queryWhenInit(String name) async {
     int counts = await _count();
     if (counts == 0) {
-      await _insert(
-          JobTypeItem(type: 0, name: name, color: ColorSelect.Green));
+      await _insert(JobTypeItem(type: 0, name: name, color: ColorSelect.green));
     }
     final rowsWhere = await _query();
     rowsWhere.sort((a, b) => a.type.compareTo(b.type));
@@ -45,15 +44,22 @@ class JobType with ChangeNotifier {
     return rowsWhere;
   }
 
+  Future<bool> queryHas(int jobType) async {
+    final allRows = await _query();
+    debugPrint('in queryHas');
+    var existedList = allRows.where((e) => e.type == jobType).toList();
+    return existedList.isNotEmpty;
+  }
+
   Future<JobTypeItem> queryWhere(int jobType) async {
     final allRows = await _query();
-    print('in queryWhere');
+    debugPrint('in queryWhere');
     return allRows.firstWhere((item) => item.type == jobType);
   }
 
   Future<int> queryMaxType() async {
     final allRows = await _query();
-    print('in queryMaxType');
+    debugPrint('in queryMaxType');
     return allRows.map((e) => e.type).reduce(max);
   }
 
@@ -71,14 +77,14 @@ class JobType with ChangeNotifier {
     };
     final rowsAffected =
         await dbHelper.update(DatabaseHelper.tableJobType, key, row);
-    print('updated $rowsAffected row(s)');
+    debugPrint('updated $rowsAffected row(s)');
     notifyListeners();
   }
 
   Future<int> _count() async {
     final counts = await dbHelper.queryRowCount(DatabaseHelper.tableJobType);
-    print('rowCount: $counts');
-    return counts;
+    debugPrint('rowCount: $counts');
+    return counts ?? 0;
   }
 
   Future<void> _insert(JobTypeItem item) async {
@@ -88,13 +94,15 @@ class JobType with ChangeNotifier {
       DatabaseHelper.columnColor: item.color.name,
     };
     final id = await dbHelper.insert(DatabaseHelper.tableJobType, row);
-    print('inserted row id: $id');
+    debugPrint('inserted row id: $id');
   }
 
   Future<List<JobTypeItem>> _query() async {
     final allRows = await dbHelper.queryAllRows(DatabaseHelper.tableJobType);
-    print('query all rows:');
-    allRows.forEach((row) => print(row));
+    debugPrint('query all rows:');
+    for (var row in allRows) {
+      debugPrint(row.toString());
+    }
     return allRows
         .map((item) => JobTypeItem(
               type: item['type'],
@@ -102,7 +110,7 @@ class JobType with ChangeNotifier {
               color: EnumToString.fromString(
                 ColorSelect.values,
                 item['color'],
-              ),
+              )!,
             ))
         .toList();
   }

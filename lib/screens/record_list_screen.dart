@@ -7,11 +7,12 @@ import '../providers/job_type.dart';
 import '../widgets/job_log_item.dart';
 
 class RecordListScreen extends StatelessWidget {
+  const RecordListScreen({super.key});
   static const routeName = '/record_list';
 
   @override
   Widget build(BuildContext context) {
-    final jobType = ModalRoute.of(context).settings.arguments as int;
+    final jobType = ModalRoute.of(context)!.settings.arguments as int;
     Future<JobTypeItem> jobTypeItem =
         Provider.of<JobType>(context, listen: false).queryWhere(jobType);
     // This gets called even when back button is pushed.
@@ -21,34 +22,36 @@ class RecordListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).translate('Your records')),
+        title: Text(AppLocalizations.of(context)!.translate('Your records')),
       ),
-      body: FutureBuilder(
+      body: FutureBuilder<List<dynamic>>(
         future: Future.wait([jobTypeItem, extractedJobLog]),
         builder: (ctx, dataSnapshot) {
           switch (dataSnapshot.connectionState) {
             case ConnectionState.waiting:
-              return Center(
-                child: const CircularProgressIndicator(),
+              return const Center(
+                child: CircularProgressIndicator(),
               );
             default:
               if (dataSnapshot.hasError) {
                 return AlertDialog(
-                  title: Text(AppLocalizations.of(context).translate('Error occurred.')),
-                  content: Text(AppLocalizations.of(context).translate('Please try later.')),
+                  title: Text(AppLocalizations.of(context)!
+                      .translate('Error occurred.')),
+                  content: Text(AppLocalizations.of(context)!
+                      .translate('Please try later.')),
                   actions: <Widget>[
-                    FlatButton(
-                      child: Text("OK"),
+                    ElevatedButton(
+                      child: const Text("OK"),
                       onPressed: () => exit(0),
                     ),
                   ],
                 );
               } else {
                 return ListView.separated(
-                  itemBuilder: (context, i) =>
-                      JobLogItem(dataSnapshot.data[1][i], dataSnapshot.data[0]),
-                  itemCount: dataSnapshot.data[1].length,
-                  separatorBuilder: (context, _) => Divider(),
+                  itemBuilder: (context, i) => JobLogItem(
+                      dataSnapshot.data![1][i], dataSnapshot.data![0]),
+                  itemCount: dataSnapshot.data![1].length,
+                  separatorBuilder: (context, _) => const Divider(),
                   padding: const EdgeInsets.only(top: 10),
                 );
               }

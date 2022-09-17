@@ -6,10 +6,11 @@ import '../models/color_select.dart';
 import '../localization/app_localizations.dart';
 
 class EditJobScreen extends StatefulWidget {
+  const EditJobScreen({super.key});
   static const routeName = 'edit_job';
 
   @override
-  _EditJobScreenState createState() => _EditJobScreenState();
+  State<EditJobScreen> createState() => _EditJobScreenState();
 }
 
 class _EditJobScreenState extends State<EditJobScreen> {
@@ -24,78 +25,63 @@ class _EditJobScreenState extends State<EditJobScreen> {
     'color': '',
   };
 
-  Future<JobTypeItem> _editedJobType;
+  late Future<JobTypeItem> _editedJobType;
 
-  JobTypeItem _editedJobTypeForSave;
+  late JobTypeItem _editedJobTypeForSave;
 
-  Future<void> _saveForm(BuildContext context, int jobTypeItemIndex) async {
-    final isValid = _form.currentState.validate();
+  void _saveForm(BuildContext context, int jobTypeItemIndex) {
+    final isValid = _form.currentState!.validate();
     if (!isValid) {
       return;
     }
-    _form.currentState.save();
-    if (jobTypeItemIndex != null) {
-      Provider.of<JobType>(context, listen: false)
-          .updateJobType(_editedJobTypeForSave)
-          .then((_) {
-        Navigator.of(context).pop();
-      });
-    } else {
-      Provider.of<JobType>(context, listen: false)
-          .addJobType(_editedJobTypeForSave)
-          .then((_) {
-        Navigator.of(context).pop();
-      });
-    }
+    _form.currentState!.save();
+    Provider.of<JobType>(context, listen: false)
+        .queryHas(jobTypeItemIndex)
+        .then((existed) => existed
+            ? Provider.of<JobType>(context, listen: false)
+                .updateJobType(_editedJobTypeForSave)
+                .then((_) {
+                Navigator.of(context).pop();
+              })
+            : Provider.of<JobType>(context, listen: false)
+                .addJobType(_editedJobTypeForSave)
+                .then((_) {
+                Navigator.of(context).pop();
+              }));
   }
 
   @override
   void didChangeDependencies() {
     if (!_isInit) return;
 
-    final jobTypeItemType = ModalRoute.of(context).settings.arguments as int;
+    final jobTypeItemType = ModalRoute.of(context)!.settings.arguments as int;
 
-    if (jobTypeItemType != null) {
-      _editedJobType = null;
-      _editedJobType = Provider.of<JobType>(context, listen: false)
-          .queryWhere(jobTypeItemType)
-          .then((value) {
-        _initValues = {
-          'name': value.name,
-          'color': value.color.name,
-        };
-        _isInit = false;
-        return value;
-      });
-    } else {
-      if (_editedJobType == null) {
-        _editedJobType = Provider.of<JobType>(context, listen: false)
-            .queryMaxType()
-            .then((value) {
-          _initValues = {
-            'name': '',
-            'color': '',
-          };
-          _isInit = false;
-          return JobTypeItem(type: value + 1, name: '', color: null);
-        });
-      }
-    }
+    _editedJobType = Provider.of<JobType>(context, listen: false)
+        .queryWhere(jobTypeItemType)
+        .then((value) {
+      _initValues = {
+        'name': value.name,
+        'color': value.color.name,
+      };
+      _isInit = false;
+      return value;
+    });
+
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    final jobTypeItemType = ModalRoute.of(context).settings.arguments as int;
+    final jobTypeItemType = ModalRoute.of(context)!.settings.arguments as int;
 
     return WillPopScope(
       onWillPop: showAlert,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context).translate('Edit Job')),
+          title: Text(AppLocalizations.of(context)!.translate('Edit Job')),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.save),
+              icon: const Icon(Icons.save),
               onPressed: () => _saveForm(context, jobTypeItemType),
             ),
           ],
@@ -105,19 +91,19 @@ class _EditJobScreenState extends State<EditJobScreen> {
           builder: (ctx, dataSnapshot) {
             switch (dataSnapshot.connectionState) {
               case ConnectionState.waiting:
-                return Center(
-                  child: const CircularProgressIndicator(),
+                return const Center(
+                  child: CircularProgressIndicator(),
                 );
               default:
                 if (dataSnapshot.hasError) {
                   return AlertDialog(
-                    title: Text(AppLocalizations.of(context)
+                    title: Text(AppLocalizations.of(context)!
                         .translate('Error occurred.')),
-                    content: Text(AppLocalizations.of(context)
+                    content: Text(AppLocalizations.of(context)!
                         .translate("Please try later.")),
                     actions: <Widget>[
-                      FlatButton(
-                        child: Text("OK"),
+                      TextButton(
+                        child: const Text("OK"),
                         onPressed: () => exit(0),
                       ),
                     ],
@@ -131,63 +117,62 @@ class _EditJobScreenState extends State<EditJobScreen> {
                         children: <Widget>[
                           ListTile(
                             leading: CircleAvatar(
-                              child: Text(
-                                dataSnapshot.data.color == null
-                                    ? ''
-                                    : dataSnapshot.data.color.name,
-                                style: TextStyle(color: Colors.white),
-                              ),
                               radius: 50,
-                              backgroundColor: dataSnapshot.data.color == null
-                                  ? Colors.grey
-                                  : dataSnapshot.data.color.object,
+                              backgroundColor: dataSnapshot.data!.color.object,
+                              child: Text(
+                                dataSnapshot.data!.color.name,
+                                style: const TextStyle(color: Colors.white),
+                              ),
                             ),
                           ),
                           TextFormField(
                             initialValue: _initValues['name'],
                             decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)
+                                labelText: AppLocalizations.of(context)!
                                     .translate('Name')),
                             textInputAction: TextInputAction.done,
                             onFieldSubmitted: (_) {
                               FocusScope.of(context)
                                   .requestFocus(_nameFocusNode);
                             },
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return AppLocalizations.of(context)
+                            validator: (String? value) {
+                              if (value == null || value.isEmpty) {
+                                return AppLocalizations.of(context)!
                                     .translate('Please provide a name.');
                               }
                               return null;
                             },
                             onSaved: (value) {
-                              _editedJobTypeForSave = JobTypeItem(
-                                  type: dataSnapshot.data.type,
-                                  name: value,
-                                  color: dataSnapshot.data.color);
+                              if (value != null) {
+                                _editedJobTypeForSave = JobTypeItem(
+                                    type: dataSnapshot.data!.type,
+                                    name: value,
+                                    color: dataSnapshot.data!.color);
+                              }
                             },
                           ),
                           DropdownButtonFormField(
                             items: ColorSelect.values.map((value) {
-                              return new DropdownMenuItem(
+                              return DropdownMenuItem(
                                 value: value,
-                                child: new Text(AppLocalizations.of(context)
+                                child: Text(AppLocalizations.of(context)!
                                     .translate(value.name)),
                               );
                             }).toList(),
-                            value: dataSnapshot.data.color ??
-                                dataSnapshot.data.color,
-                            onChanged: (selectedValue) {
-                              setState(() {
-                                dataSnapshot.data.color = selectedValue;
-                              });
+                            value: dataSnapshot.data!.color,
+                            onChanged: (ColorSelect? selectedValue) {
+                              if (selectedValue != null) {
+                                setState(() {
+                                  dataSnapshot.data!.color = selectedValue;
+                                });
+                              }
                             },
                             decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)
+                                labelText: AppLocalizations.of(context)!
                                     .translate('Color')),
                             validator: (value) {
                               if (value == null) {
-                                return AppLocalizations.of(context)
+                                return AppLocalizations.of(context)!
                                     .translate('Please choose a color.');
                               }
                               return null;
@@ -210,18 +195,18 @@ class _EditJobScreenState extends State<EditJobScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text(AppLocalizations.of(context).translate('Back?')),
-              content: Text(AppLocalizations.of(context)
+              title: Text(AppLocalizations.of(context)!.translate('Back?')),
+              content: Text(AppLocalizations.of(context)!
                   .translate('Unsaved data will be lost.')),
               actions: <Widget>[
-                FlatButton(
-                  child: Text("YES"),
+                TextButton(
+                  child: const Text("YES"),
                   onPressed: () {
                     Navigator.of(context).pop(true);
                   },
                 ),
-                FlatButton(
-                  child: Text("NO"),
+                TextButton(
+                  child: const Text("NO"),
                   onPressed: () {
                     Navigator.of(context).pop(false);
                   },

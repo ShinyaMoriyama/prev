@@ -6,8 +6,8 @@ class Job {
   int type;
 
   Job({
-    @required this.date,
-    @required this.type,
+    required this.date,
+    required this.type,
   });
 }
 
@@ -20,7 +20,7 @@ class JobLog with ChangeNotifier {
       DatabaseHelper.columnType: job.type,
     };
     final id = await dbHelper.insert(DatabaseHelper.tableJobLog, row);
-    print('inserted row id: $id');
+    debugPrint('inserted row id: $id');
     notifyListeners();
   }
 
@@ -33,8 +33,10 @@ class JobLog with ChangeNotifier {
 
   Future<List<Job>> _query() async {
     final allRows = await dbHelper.queryAllRows(DatabaseHelper.tableJobLog);
-    print('query all rows:');
-    allRows.forEach((row) => print(row));
+    debugPrint('query all rows:');
+    for (var row in allRows) {
+      debugPrint(row.toString());
+    }
     return allRows
         .map(
           (item) => Job(
@@ -47,9 +49,9 @@ class JobLog with ChangeNotifier {
 
   Future<void> deleteJob(DateTime date) async {
     final key = DatabaseHelper.columnDate;
-    final rowsDeleted =
-        await dbHelper.delete(DatabaseHelper.tableJobLog, key, date.toIso8601String());
-    print('deleted $rowsDeleted row(s): row $rowsDeleted');
+    final rowsDeleted = await dbHelper.delete(
+        DatabaseHelper.tableJobLog, key, date.toIso8601String());
+    debugPrint('deleted $rowsDeleted row(s): row $rowsDeleted');
     notifyListeners();
   }
 
@@ -57,7 +59,7 @@ class JobLog with ChangeNotifier {
     final key = DatabaseHelper.columnType;
     final rowsDeleted =
         await dbHelper.delete(DatabaseHelper.tableJobLog, key, type);
-    print('joblog deleted $rowsDeleted row(s): row $rowsDeleted');
+    debugPrint('joblog deleted $rowsDeleted row(s): row $rowsDeleted');
     notifyListeners();
   }
 }

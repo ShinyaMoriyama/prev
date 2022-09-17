@@ -13,7 +13,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 class InputButton extends StatelessWidget {
   final JobTypeItem jobType;
 
-  InputButton(this.jobType);
+  const InputButton(this.jobType, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,16 +21,23 @@ class InputButton extends StatelessWidget {
       margin: const EdgeInsets.all(10),
       child: ButtonTheme(
         minWidth: 250,
-        child: RaisedButton(
+        child: ElevatedButton(
           onPressed: () {
             showAlert(context);
           },
-          textColor: Colors.white,
-          padding: const EdgeInsets.all(10),
-          color: jobType.color.object,
-          child: Text(jobType.name, style: TextStyle(fontSize: 25)),
-          shape: RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(6.0),
+          style: ElevatedButton.styleFrom(
+            textStyle: const TextStyle(color: Colors.white),
+            padding: const EdgeInsets.all(10),
+            foregroundColor: jobType.color.object,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6.0),
+            ),
+          ),
+          child: Text(
+            jobType.name,
+            style: const TextStyle(
+              fontSize: 25,
+            ),
           ),
         ),
       ),
@@ -39,34 +46,31 @@ class InputButton extends StatelessWidget {
 
   Future<void> _scheduleNotification(String message, int id) async {
     // variables on android is dummy for now
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
       'your other channel id',
       'your other channel name',
-      'your other channel description',
+      channelDescription: 'your other channel description',
     );
-    var iOSPlatformChannelSpecifics =
-        IOSNotificationDetails();
+    var iOSPlatformChannelSpecifics = const IOSNotificationDetails();
     var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+      android: androidPlatformChannelSpecifics,
+      iOS: iOSPlatformChannelSpecifics,
+    );
     await flutterLocalNotificationsPlugin.periodicallyShow(
-        id,
-        null,
-        message,
-        RepeatInterval.Daily,
-        platformChannelSpecifics);
+        id, null, message, RepeatInterval.daily, platformChannelSpecifics);
   }
 
   showAlert(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        String message = '${jobType.name}' +
-            AppLocalizations.of(context).translate(' is done?');
+        String message =
+            "${jobType.name}${AppLocalizations.of(context)!.translate(' is done?')}";
         return AlertDialog(
           title: Text(message),
           actions: <Widget>[
-            FlatButton(
-              child: Text("YES"),
+            ElevatedButton(
+              child: const Text("YES"),
               onPressed: () {
                 Provider.of<JobLog>(context, listen: false)
                     .addJob(Job(
@@ -81,17 +85,17 @@ class InputButton extends StatelessWidget {
                 _scheduleNotification(message, jobType.type);
               },
             ),
-            FlatButton(
+            ElevatedButton(
               child: Text(
-                  AppLocalizations.of(context).translate('NO(Just Looking)')),
+                  AppLocalizations.of(context)!.translate('NO(Just Looking)')),
               onPressed: () {
                 Navigator.of(context).pushReplacementNamed(
                     RecordListScreen.routeName,
                     arguments: jobType.type);
               },
             ),
-            FlatButton(
-              child: Text("BACK"),
+            ElevatedButton(
+              child: const Text("BACK"),
               onPressed: () {
                 Navigator.of(context).pop();
               },

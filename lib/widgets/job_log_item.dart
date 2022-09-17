@@ -9,7 +9,7 @@ import '../models/color_select.dart';
 class JobLogItem extends StatelessWidget {
   final Job job;
   final JobTypeItem jobTypeItem;
-  JobLogItem(this.job, this.jobTypeItem);
+  const JobLogItem(this.job, this.jobTypeItem, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,22 +19,22 @@ class JobLogItem extends StatelessWidget {
       String dateStr;
       if (date.isBefore(checkDate)) {
         dateStr = DateFormat.Md().format(job.date);
-      } else if (date.isBefore(checkDate.add(Duration(days: 1)))) {
-        dateStr = AppLocalizations.of(context).translate('7d');
-      } else if (date.isBefore(checkDate.add(Duration(days: 2)))) {
-        dateStr = AppLocalizations.of(context).translate('6d');
-      } else if (date.isBefore(checkDate.add(Duration(days: 3)))) {
-        dateStr = AppLocalizations.of(context).translate('5d');
-      } else if (date.isBefore(checkDate.add(Duration(days: 4)))) {
-        dateStr = AppLocalizations.of(context).translate('4d');
-      } else if (date.isBefore(checkDate.add(Duration(days: 5)))) {
-        dateStr = AppLocalizations.of(context).translate('3d');
-      } else if (date.isBefore(checkDate.add(Duration(days: 6)))) {
-        dateStr = AppLocalizations.of(context).translate('2d');
-      } else if (date.isBefore(checkDate.add(Duration(days: 7)))) {
-        dateStr = AppLocalizations.of(context).translate('1d');
+      } else if (date.isBefore(checkDate.add(const Duration(days: 1)))) {
+        dateStr = AppLocalizations.of(context)!.translate('7d');
+      } else if (date.isBefore(checkDate.add(const Duration(days: 2)))) {
+        dateStr = AppLocalizations.of(context)!.translate('6d');
+      } else if (date.isBefore(checkDate.add(const Duration(days: 3)))) {
+        dateStr = AppLocalizations.of(context)!.translate('5d');
+      } else if (date.isBefore(checkDate.add(const Duration(days: 4)))) {
+        dateStr = AppLocalizations.of(context)!.translate('4d');
+      } else if (date.isBefore(checkDate.add(const Duration(days: 5)))) {
+        dateStr = AppLocalizations.of(context)!.translate('3d');
+      } else if (date.isBefore(checkDate.add(const Duration(days: 6)))) {
+        dateStr = AppLocalizations.of(context)!.translate('2d');
+      } else if (date.isBefore(checkDate.add(const Duration(days: 7)))) {
+        dateStr = AppLocalizations.of(context)!.translate('1d');
       } else {
-        dateStr = AppLocalizations.of(context).translate('Today');
+        dateStr = AppLocalizations.of(context)!.translate('Today');
       }
       return dateStr;
     }
@@ -44,20 +44,20 @@ class JobLogItem extends StatelessWidget {
         DateFormat.yMd().add_Hm().format(job.date),
       ),
       leading: CircleAvatar(
+        radius: 50,
+        backgroundColor: jobTypeItem.color.object,
         child: Text(
           // DateFormat.Md().format(job.date),
           getDateText(job.date),
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
-        radius: 50,
-        backgroundColor: jobTypeItem.color.object,
       ),
-      trailing: Container(
+      trailing: SizedBox(
         width: 100,
         child: Row(
           children: <Widget>[
             IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: () {
                 showAlert(context);
               },
@@ -74,11 +74,11 @@ class JobLogItem extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)
+          title: Text(AppLocalizations.of(context)!
               .translate('Are You Sure Want To Delete It?')),
           actions: <Widget>[
-            FlatButton(
-              child: Text("YES"),
+            ElevatedButton(
+              child: const Text("YES"),
               onPressed: () {
                 Provider.of<JobLog>(context, listen: false)
                     .deleteJob(job.date)
@@ -87,8 +87,8 @@ class JobLogItem extends StatelessWidget {
                 });
               },
             ),
-            FlatButton(
-              child: Text("BACK"),
+            ElevatedButton(
+              child: const Text("BACK"),
               onPressed: () {
                 Navigator.of(context).pop();
               },

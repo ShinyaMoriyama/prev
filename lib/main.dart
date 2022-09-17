@@ -13,42 +13,42 @@ import './screens/job_list_screen.dart';
 import './screens/edit_job_screen.dart';
 import './localization/app_localizations.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-NotificationAppLaunchDetails notificationAppLaunchDetails;
-
-Future<void> initializeNotification() async {
-  // needed if you intend to initialize in the `main` function
-  WidgetsFlutterBinding.ensureInitialized();
-
-  notificationAppLaunchDetails =
-      await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-  var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
-  var initializationSettingsIOS = IOSInitializationSettings(
-    requestSoundPermission: true,
-    requestBadgePermission: true,
-    requestAlertPermission: true,
-  );
-  var initializationSettings = InitializationSettings(
-      initializationSettingsAndroid, initializationSettingsIOS);
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-}
-
 void main() async {
   // Workaround to 'The getter 'languageCode' was called on null flutter for iOS"
   // https://github.com/flutter/flutter/issues/39032
   WidgetsFlutterBinding.ensureInitialized();
-  while (window.locale == null) {
-    await Future.delayed(const Duration(milliseconds: 1));
-  }
+
+  // locale
+  // while (window.locale == null) {
+  await Future.delayed(const Duration(milliseconds: 1));
+  // }
   final locale = window.locale;
   Intl.systemLocale = locale.toString();
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await initializeNotification();
-  runApp(MyApp());
+
+  // device rotation
+  await SystemChrome.setPreferredOrientations(
+    [
+      DeviceOrientation.portraitUp,
+    ],
+  );
+
+  // local notification
+  const IOSInitializationSettings initializationSettingsIOS =
+      IOSInitializationSettings(
+    requestSoundPermission: true,
+    requestBadgePermission: true,
+    requestAlertPermission: true,
+  );
+  const InitializationSettings initializationSettings =
+      InitializationSettings(iOS: initializationSettingsIOS);
+  await FlutterLocalNotificationsPlugin().initialize(initializationSettings);
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -57,19 +57,19 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<JobType>(create: (context) => JobType()),
       ],
       child: MaterialApp(
-        home: InputScreen(),
+        home: const InputScreen(),
         routes: {
-          RecordListScreen.routeName: (context) => RecordListScreen(),
-          JobListScreen.routeName: (context) => JobListScreen(),
-          EditJobScreen.routeName: (context) => EditJobScreen(),
+          RecordListScreen.routeName: (context) => const RecordListScreen(),
+          JobListScreen.routeName: (context) => const JobListScreen(),
+          EditJobScreen.routeName: (context) => const EditJobScreen(),
         },
         // List all of the app's supported locales here
-        supportedLocales: [
+        supportedLocales: const [
           Locale('en'),
           Locale('ja'),
         ],
         // These delegates make sure that the localization data for the proper language is loaded
-        localizationsDelegates: [
+        localizationsDelegates: const [
           // THIS CLASS WILL BE ADDED LATER
           // A class which loads the translations from JSON files
           AppLocalizations.delegate,

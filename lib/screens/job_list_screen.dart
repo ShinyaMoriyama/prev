@@ -7,6 +7,8 @@ import '../providers/job_type.dart' as jt;
 import '../widgets/job_type_item.dart';
 
 class JobListScreen extends StatelessWidget {
+  const JobListScreen({super.key});
+
   static const routeName = '/joblist';
 
   @override
@@ -18,7 +20,7 @@ class JobListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).translate('Your jobs list')),
+        title: Text(AppLocalizations.of(context)!.translate('Your jobs list')),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.add),
@@ -28,24 +30,24 @@ class JobListScreen extends StatelessWidget {
           )
         ],
       ),
-      body: FutureBuilder(
+      body: FutureBuilder<List<jt.JobTypeItem>>(
         future: extractedJobType,
         builder: (ctx, dataSnapshot) {
           switch (dataSnapshot.connectionState) {
             case ConnectionState.waiting:
-              return Center(
-                child: const CircularProgressIndicator(),
+              return const Center(
+                child: CircularProgressIndicator(),
               );
             default:
               if (dataSnapshot.hasError) {
                 return AlertDialog(
-                  title: Text(AppLocalizations.of(context)
+                  title: Text(AppLocalizations.of(context)!
                       .translate('Error occurred.')),
-                  content: Text(AppLocalizations.of(context)
+                  content: Text(AppLocalizations.of(context)!
                       .translate('Please try later.')),
                   actions: <Widget>[
-                    FlatButton(
-                      child: Text("OK"),
+                    ElevatedButton(
+                      child: const Text("OK"),
                       onPressed: () => exit(0),
                     ),
                   ],
@@ -53,9 +55,9 @@ class JobListScreen extends StatelessWidget {
               } else {
                 return ListView.separated(
                   itemBuilder: (context, i) =>
-                      JobTypeItem(dataSnapshot.data[i]),
-                  itemCount: dataSnapshot.data.length,
-                  separatorBuilder: (context, _) => Divider(),
+                      JobTypeItem(jobType: dataSnapshot.data![i]),
+                  itemCount: dataSnapshot.data!.length,
+                  separatorBuilder: (context, _) => const Divider(),
                   padding: const EdgeInsets.only(top: 10),
                 );
               }

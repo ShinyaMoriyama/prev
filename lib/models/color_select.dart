@@ -1,40 +1,40 @@
 import 'package:flutter/material.dart';
 
 enum ColorSelect {
-  Blue,
-  Yellow,
-  Brown,
-  Red,
-  Purple,
-  Pink,
-  Green,
-  Black,
-  Orange
+  blue,
+  yellow,
+  brown,
+  red,
+  purple,
+  pink,
+  green,
+  black,
+  orange
 }
 
 extension ColorSelectNameExtension on ColorSelect {
   String get name {
     switch (this) {
-      case ColorSelect.Blue:
+      case ColorSelect.blue:
         return 'Blue';
-      case ColorSelect.Yellow:
+      case ColorSelect.yellow:
         return 'Yellow';
-      case ColorSelect.Brown:
+      case ColorSelect.brown:
         return 'Brown';
-      case ColorSelect.Red:
+      case ColorSelect.red:
         return 'Red';
-      case ColorSelect.Purple:
+      case ColorSelect.purple:
         return 'Purple';
-      case ColorSelect.Pink:
+      case ColorSelect.pink:
         return 'Pink';
-      case ColorSelect.Green:
+      case ColorSelect.green:
         return 'Green';
-      case ColorSelect.Black:
+      case ColorSelect.black:
         return 'Black';
-      case ColorSelect.Orange:
+      case ColorSelect.orange:
         return 'Orange';
       default:
-        return null;
+        return 'Green';
     }
   }
 }
@@ -42,26 +42,26 @@ extension ColorSelectNameExtension on ColorSelect {
 extension ColorSelectColorExtension on ColorSelect {
   Color get object {
     switch (this) {
-      case ColorSelect.Blue:
+      case ColorSelect.blue:
         return Colors.blue;
-      case ColorSelect.Yellow:
-        return Colors.yellow[600];
-      case ColorSelect.Brown:
+      case ColorSelect.yellow:
+        return Colors.yellow.shade600;
+      case ColorSelect.brown:
         return Colors.brown;
-      case ColorSelect.Red:
+      case ColorSelect.red:
         return Colors.red;
-      case ColorSelect.Purple:
+      case ColorSelect.purple:
         return Colors.purple;
-      case ColorSelect.Pink:
+      case ColorSelect.pink:
         return Colors.pink;
-      case ColorSelect.Green:
+      case ColorSelect.green:
         return Colors.green;
-      case ColorSelect.Black:
+      case ColorSelect.black:
         return Colors.black;
-      case ColorSelect.Orange:
+      case ColorSelect.orange:
         return Colors.orange;
       default:
-        return null;
+        return Colors.green;
     }
   }
 }

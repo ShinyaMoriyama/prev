@@ -11,27 +11,28 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 class JobTypeItem extends StatelessWidget {
+  const JobTypeItem({required this.jobType, super.key});
+
   final jt.JobTypeItem jobType;
-  JobTypeItem(this.jobType);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(jobType.name),
       leading: CircleAvatar(
-        child: Text(
-          jobType.color.name,
-          style: TextStyle(color: Colors.white),
-        ),
         radius: 50,
         backgroundColor: jobType.color.object,
+        child: Text(
+          jobType.color.name,
+          style: const TextStyle(color: Colors.white),
+        ),
       ),
-      trailing: Container(
+      trailing: SizedBox(
         width: 100,
         child: Row(
           children: <Widget>[
             IconButton(
-              icon: Icon(Icons.edit),
+              icon: const Icon(Icons.edit),
               onPressed: () {
                 Navigator.of(context).pushNamed(EditJobScreen.routeName,
                     arguments: jobType.type);
@@ -39,7 +40,7 @@ class JobTypeItem extends StatelessWidget {
               color: Theme.of(context).primaryColor,
             ),
             IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: () {
                 showAlert(context);
               },
@@ -56,11 +57,11 @@ class JobTypeItem extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)
+          title: Text(AppLocalizations.of(context)!
               .translate('Are You Sure Want To Delete It?')),
           actions: <Widget>[
-            FlatButton(
-              child: Text("YES"),
+            ElevatedButton(
+              child: const Text("YES"),
               onPressed: () {
                 Provider.of<jt.JobType>(context, listen: false)
                     .deleteJobType(jobType.type)
@@ -73,8 +74,8 @@ class JobTypeItem extends StatelessWidget {
                 });
               },
             ),
-            FlatButton(
-              child: Text("BACK"),
+            ElevatedButton(
+              child: const Text("BACK"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
