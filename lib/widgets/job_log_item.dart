@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../localization/app_localizations.dart';
+import '../localization/loc_app.dart';
 import '../providers/job_log.dart';
 import '../providers/job_type.dart';
 import '../models/color_select.dart';
@@ -20,21 +20,21 @@ class JobLogItem extends StatelessWidget {
       if (date.isBefore(checkDate)) {
         dateStr = DateFormat.Md().format(job.date);
       } else if (date.isBefore(checkDate.add(const Duration(days: 1)))) {
-        dateStr = AppLocalizations.of(context)!.translate('7d');
+        dateStr = LocApp.translate(LKeys.sevenD);
       } else if (date.isBefore(checkDate.add(const Duration(days: 2)))) {
-        dateStr = AppLocalizations.of(context)!.translate('6d');
+        dateStr = LocApp.translate(LKeys.sixD);
       } else if (date.isBefore(checkDate.add(const Duration(days: 3)))) {
-        dateStr = AppLocalizations.of(context)!.translate('5d');
+        dateStr = LocApp.translate(LKeys.fiveD);
       } else if (date.isBefore(checkDate.add(const Duration(days: 4)))) {
-        dateStr = AppLocalizations.of(context)!.translate('4d');
+        dateStr = LocApp.translate(LKeys.fourD);
       } else if (date.isBefore(checkDate.add(const Duration(days: 5)))) {
-        dateStr = AppLocalizations.of(context)!.translate('3d');
+        dateStr = LocApp.translate(LKeys.threeD);
       } else if (date.isBefore(checkDate.add(const Duration(days: 6)))) {
-        dateStr = AppLocalizations.of(context)!.translate('2d');
+        dateStr = LocApp.translate(LKeys.twoD);
       } else if (date.isBefore(checkDate.add(const Duration(days: 7)))) {
-        dateStr = AppLocalizations.of(context)!.translate('1d');
+        dateStr = LocApp.translate(LKeys.oneD);
       } else {
-        dateStr = AppLocalizations.of(context)!.translate('Today');
+        dateStr = LocApp.translate(LKeys.today);
       }
       return dateStr;
     }
@@ -74,8 +74,7 @@ class JobLogItem extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)!
-              .translate('Are You Sure Want To Delete It?')),
+          title: Text(LocApp.translate(LKeys.areYouSureWantToDeleteIt)),
           actions: <Widget>[
             ElevatedButton(
               child: const Text("YES"),

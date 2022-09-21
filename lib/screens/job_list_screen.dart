@@ -1,37 +1,52 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../localization/app_localizations.dart';
+import '../localization/loc_app.dart';
 import '../screens/edit_job_screen.dart';
-import '../providers/job_type.dart' as jt;
-import '../widgets/job_type_item.dart';
+import '../providers/job_type.dart';
+import '../widgets/job_type_widget.dart';
 
-class JobListScreen extends StatelessWidget {
+class JobListScreen extends StatefulWidget {
   const JobListScreen({super.key});
 
   static const routeName = '/joblist';
 
   @override
-  Widget build(BuildContext context) {
-    // This gets called even when back button is pushed.
-    // We can't move this to initState due to 'listen: true' though.
-    Future<List<jt.JobTypeItem>> extractedJobType =
-        Provider.of<jt.JobType>(context, listen: true).query();
+  State<JobListScreen> createState() => _JobListScreenState();
+}
 
+class _JobListScreenState extends State<JobListScreen> {
+  late Future<List<JobTypeItem>> _extractedJobType;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _extractedJobType = futureJobType(context);
+  }
+
+  Future<List<JobTypeItem>> futureJobType(BuildContext context) async =>
+      _extractedJobType = Provider.of<JobType>(context, listen: false).query();
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.translate('Your jobs list')),
+        title: Text(LocApp.translate(LKeys.yourJobsList)),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.of(context).pushNamed(EditJobScreen.routeName);
+            onPressed: () async {
+              await Navigator.of(context).pushNamed(EditJobScreen.routeName);
+              setState(() {
+                _extractedJobType = futureJobType(context);
+              });
             },
           )
         ],
       ),
-      body: FutureBuilder<List<jt.JobTypeItem>>(
-        future: extractedJobType,
+      body: FutureBuilder<List<JobTypeItem>>(
+        future: _extractedJobType,
         builder: (ctx, dataSnapshot) {
           switch (dataSnapshot.connectionState) {
             case ConnectionState.waiting:
@@ -41,10 +56,8 @@ class JobListScreen extends StatelessWidget {
             default:
               if (dataSnapshot.hasError) {
                 return AlertDialog(
-                  title: Text(AppLocalizations.of(context)!
-                      .translate('Error occurred.')),
-                  content: Text(AppLocalizations.of(context)!
-                      .translate('Please try later.')),
+                  title: Text(LocApp.translate(LKeys.errorOccurred)),
+                  content: Text(LocApp.translate(LKeys.pleaseTryLater)),
                   actions: <Widget>[
                     ElevatedButton(
                       child: const Text("OK"),
@@ -54,8 +67,14 @@ class JobListScreen extends StatelessWidget {
                 );
               } else {
                 return ListView.separated(
-                  itemBuilder: (context, i) =>
-                      JobTypeItem(jobType: dataSnapshot.data![i]),
+                  itemBuilder: (context, i) => JobTypeWidget(
+                    jobType: dataSnapshot.data![i],
+                    callBackSetState: (ctx) {
+                      setState(() {
+                        _extractedJobType = futureJobType(ctx);
+                      });
+                    },
+                  ),
                   itemCount: dataSnapshot.data!.length,
                   separatorBuilder: (context, _) => const Divider(),
                   padding: const EdgeInsets.only(top: 10),

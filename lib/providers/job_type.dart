@@ -28,27 +28,17 @@ class JobType with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<JobTypeItem>> queryWhenInit(String name) async {
+  Future<void> initInsert(String name) async {
     int counts = await _count();
     if (counts == 0) {
       await _insert(JobTypeItem(type: 0, name: name, color: ColorSelect.green));
     }
-    final rowsWhere = await _query();
-    rowsWhere.sort((a, b) => a.type.compareTo(b.type));
-    return rowsWhere;
   }
 
   Future<List<JobTypeItem>> query() async {
     final rowsWhere = await _query();
     rowsWhere.sort((a, b) => a.type.compareTo(b.type));
     return rowsWhere;
-  }
-
-  Future<bool> queryHas(int jobType) async {
-    final allRows = await _query();
-    debugPrint('in queryHas');
-    var existedList = allRows.where((e) => e.type == jobType).toList();
-    return existedList.isNotEmpty;
   }
 
   Future<JobTypeItem> queryWhere(int jobType) async {

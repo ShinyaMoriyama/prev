@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../localization/app_localizations.dart';
+import '../localization/loc_app.dart';
 import '../providers/job_log.dart';
 import '../providers/job_type.dart';
 import '../widgets/job_log_item.dart';
@@ -22,7 +22,7 @@ class RecordListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.translate('Your records')),
+        title: Text(LocApp.translate(LKeys.yourRecords)),
       ),
       body: FutureBuilder<List<dynamic>>(
         future: Future.wait([jobTypeItem, extractedJobLog]),
@@ -35,10 +35,8 @@ class RecordListScreen extends StatelessWidget {
             default:
               if (dataSnapshot.hasError) {
                 return AlertDialog(
-                  title: Text(AppLocalizations.of(context)!
-                      .translate('Error occurred.')),
-                  content: Text(AppLocalizations.of(context)!
-                      .translate('Please try later.')),
+                  title: Text(LocApp.translate(LKeys.errorOccurred)),
+                  content: Text(LocApp.translate(LKeys.pleaseTryLater)),
                   actions: <Widget>[
                     ElevatedButton(
                       child: const Text("OK"),

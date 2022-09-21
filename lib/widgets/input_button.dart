@@ -5,7 +5,7 @@ import '../screens/record_list_screen.dart';
 import '../providers/job_log.dart';
 import '../providers/job_type.dart';
 import '../models/color_select.dart';
-import '../localization/app_localizations.dart';
+import '../localization/loc_app.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -19,25 +19,23 @@ class InputButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(10),
-      child: ButtonTheme(
-        minWidth: 250,
-        child: ElevatedButton(
-          onPressed: () {
-            showAlert(context);
-          },
-          style: ElevatedButton.styleFrom(
-            textStyle: const TextStyle(color: Colors.white),
-            padding: const EdgeInsets.all(10),
-            foregroundColor: jobType.color.object,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6.0),
-            ),
+      child: ElevatedButton(
+        onPressed: () {
+          showAlert(context);
+        },
+        style: ElevatedButton.styleFrom(
+          fixedSize: const Size.fromWidth(250),
+          padding: const EdgeInsets.all(10),
+          backgroundColor: jobType.color.object,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(6.0),
           ),
-          child: Text(
-            jobType.name,
-            style: const TextStyle(
-              fontSize: 25,
-            ),
+        ),
+        child: Text(
+          jobType.name,
+          style: const TextStyle(
+            fontSize: 25,
+            color: Colors.white,
           ),
         ),
       ),
@@ -64,8 +62,8 @@ class InputButton extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        String message =
-            "${jobType.name}${AppLocalizations.of(context)!.translate(' is done?')}";
+        String message = "${jobType.name}${LocApp.translate(LKeys.isDone)}";
+
         return AlertDialog(
           title: Text(message),
           actions: <Widget>[
@@ -86,8 +84,7 @@ class InputButton extends StatelessWidget {
               },
             ),
             ElevatedButton(
-              child: Text(
-                  AppLocalizations.of(context)!.translate('NO(Just Looking)')),
+              child: Text(LocApp.translate(LKeys.nOJustLooking)),
               onPressed: () {
                 Navigator.of(context).pushReplacementNamed(
                     RecordListScreen.routeName,

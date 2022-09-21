@@ -1,9 +1,9 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/job_type.dart';
 import '../models/color_select.dart';
-import '../localization/app_localizations.dart';
+import '../localization/loc_app.dart';
+import '../common/try_later.dart';
 
 class EditJobScreen extends StatefulWidget {
   const EditJobScreen({super.key});
@@ -29,56 +29,74 @@ class _EditJobScreenState extends State<EditJobScreen> {
 
   late JobTypeItem _editedJobTypeForSave;
 
-  void _saveForm(BuildContext context, int jobTypeItemIndex) {
+  void _saveForm(BuildContext context, int? jobTypeItemIndex) {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
       return;
     }
     _form.currentState!.save();
-    Provider.of<JobType>(context, listen: false)
-        .queryHas(jobTypeItemIndex)
-        .then((existed) => existed
-            ? Provider.of<JobType>(context, listen: false)
-                .updateJobType(_editedJobTypeForSave)
-                .then((_) {
-                Navigator.of(context).pop();
-              })
-            : Provider.of<JobType>(context, listen: false)
-                .addJobType(_editedJobTypeForSave)
-                .then((_) {
-                Navigator.of(context).pop();
-              }));
+
+    if (jobTypeItemIndex != null) {
+      Provider.of<JobType>(context, listen: false)
+          .updateJobType(_editedJobTypeForSave)
+          .then((_) {
+        Navigator.of(context).pop();
+      });
+    } else {
+      Provider.of<JobType>(context, listen: false)
+          .addJobType(_editedJobTypeForSave)
+          .then((_) {
+        Navigator.of(context).pop();
+      });
+    }
   }
 
   @override
   void didChangeDependencies() {
     if (!_isInit) return;
 
-    final jobTypeItemType = ModalRoute.of(context)!.settings.arguments as int;
+    final jobTypeItemType = ModalRoute.of(context)!.settings.arguments as int?;
 
-    _editedJobType = Provider.of<JobType>(context, listen: false)
-        .queryWhere(jobTypeItemType)
-        .then((value) {
-      _initValues = {
-        'name': value.name,
-        'color': value.color.name,
-      };
-      _isInit = false;
-      return value;
-    });
+    if (jobTypeItemType != null) {
+      _editedJobType = Provider.of<JobType>(context, listen: false)
+          .queryWhere(jobTypeItemType)
+          .then((value) {
+        _initValues = {
+          'name': value.name,
+          'color': value.color.name,
+        };
+        _isInit = false;
+        return value;
+      });
+    } else {
+      _editedJobType = Provider.of<JobType>(context, listen: false)
+          .queryMaxType()
+          .then((value) {
+        _initValues = {
+          'name': '',
+          'color': '',
+        };
+        _isInit = false;
+        return JobTypeItem(
+          type: value + 1,
+          name: '',
+          color: ColorSelect.black,
+        );
+      });
+    }
 
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    final jobTypeItemType = ModalRoute.of(context)!.settings.arguments as int;
+    final jobTypeItemType = ModalRoute.of(context)!.settings.arguments as int?;
 
     return WillPopScope(
       onWillPop: showAlert,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.translate('Edit Job')),
+          title: Text(LocApp.translate(LKeys.editJob)),
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.save),
@@ -96,18 +114,7 @@ class _EditJobScreenState extends State<EditJobScreen> {
                 );
               default:
                 if (dataSnapshot.hasError) {
-                  return AlertDialog(
-                    title: Text(AppLocalizations.of(context)!
-                        .translate('Error occurred.')),
-                    content: Text(AppLocalizations.of(context)!
-                        .translate("Please try later.")),
-                    actions: <Widget>[
-                      TextButton(
-                        child: const Text("OK"),
-                        onPressed: () => exit(0),
-                      ),
-                    ],
-                  );
+                  return const TryLater();
                 } else {
                   return Padding(
                     padding: const EdgeInsets.all(16),
@@ -128,8 +135,7 @@ class _EditJobScreenState extends State<EditJobScreen> {
                           TextFormField(
                             initialValue: _initValues['name'],
                             decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)!
-                                    .translate('Name')),
+                                labelText: LocApp.translate(LKeys.name)),
                             textInputAction: TextInputAction.done,
                             onFieldSubmitted: (_) {
                               FocusScope.of(context)
@@ -137,8 +143,8 @@ class _EditJobScreenState extends State<EditJobScreen> {
                             },
                             validator: (String? value) {
                               if (value == null || value.isEmpty) {
-                                return AppLocalizations.of(context)!
-                                    .translate('Please provide a name.');
+                                return LocApp.translate(
+                                    LKeys.pleaseProvideName);
                               }
                               return null;
                             },
@@ -155,8 +161,7 @@ class _EditJobScreenState extends State<EditJobScreen> {
                             items: ColorSelect.values.map((value) {
                               return DropdownMenuItem(
                                 value: value,
-                                child: Text(AppLocalizations.of(context)!
-                                    .translate(value.name)),
+                                child: Text(value.name),
                               );
                             }).toList(),
                             value: dataSnapshot.data!.color,
@@ -168,12 +173,12 @@ class _EditJobScreenState extends State<EditJobScreen> {
                               }
                             },
                             decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)!
-                                    .translate('Color')),
+                              labelText: LocApp.translate(LKeys.color),
+                            ),
                             validator: (value) {
                               if (value == null) {
-                                return AppLocalizations.of(context)!
-                                    .translate('Please choose a color.');
+                                return LocApp.translate(
+                                    LKeys.pleaseChooseColor);
                               }
                               return null;
                             },
@@ -195,9 +200,8 @@ class _EditJobScreenState extends State<EditJobScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text(AppLocalizations.of(context)!.translate('Back?')),
-              content: Text(AppLocalizations.of(context)!
-                  .translate('Unsaved data will be lost.')),
+              title: Text(LocApp.translate(LKeys.back)),
+              content: Text(LocApp.translate(LKeys.unsavedDataLost)),
               actions: <Widget>[
                 TextButton(
                   child: const Text("YES"),
