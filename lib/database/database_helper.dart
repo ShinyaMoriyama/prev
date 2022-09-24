@@ -32,8 +32,9 @@ class DatabaseHelper {
   Future<Database> _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = p.join(documentsDirectory.path, _databaseName);
-    return await openDatabase(path,
+    var db = await openDatabase(path,
         version: _databaseVersion, onCreate: _onCreate);
+    return db;
   }
 
   // SQL code to create the database table
