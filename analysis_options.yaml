@@ -1,0 +1,13 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+    exclude:
+        - "**/*.g.dart"
+        - "**/*.freezed.dart"
+    errors:
+        # jsonkey with freezed
+        # https://github.com/rrousselGit/freezed/issues/488
+        invalid_annotation_target: ignore
+
+linter:
+    rules:

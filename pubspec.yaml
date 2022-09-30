@@ -1,0 +1,40 @@
+name: prev
+description: A new Flutter project.
+
+version: 1.1.0+3
+
+environment:
+    sdk: ">=2.17.6 <3.0.0"
+
+dependencies:
+    flutter:
+        sdk: flutter
+    provider: ^6.0.3
+    intl: ^0.17.0
+    sqflite: ^2.1.0
+    path_provider: ^2.0.11
+    enum_to_string: ^2.0.1
+    flutter_localizations:
+        sdk: flutter
+    flutter_local_notifications: ^11.0.1
+    cupertino_icons: ^0.1.2
+    path: ^1.8.2
+
+dev_dependencies:
+    integration_test:
+        sdk: flutter
+    flutter_test:
+        sdk: flutter
+    flutter_launcher_icons: ^0.10.0
+    flutter_lints: ^2.0.1
+    mockito: ^5.3.1
+    flutter_local_notifications_platform_interface: ^6.0.0
+    plugin_platform_interface: ^2.1.3
+
+flutter_icons:
+    android: "app_icon"
+    ios: true
+    image_path: "dev_assets/IMG_4350.png"
+
+flutter:
+    uses-material-design: true
