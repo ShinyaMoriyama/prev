@@ -6,14 +6,24 @@ import '../providers/job_log.dart';
 import '../providers/job_type.dart';
 import '../models/color_select.dart';
 import '../localization/loc_app.dart';
+import '../common/utils.dart' as utils;
+import '../common/try_later.dart';
 
-class InputButton extends StatelessWidget {
+class InputButton extends StatefulWidget {
   final JobTypeItem jobType;
 
   const InputButton(this.jobType, {super.key});
 
   @override
+  State<InputButton> createState() => _InputButtonState();
+}
+
+class _InputButtonState extends State<InputButton> {
+  late Future<DateTime?> _lasttime;
+  @override
   Widget build(BuildContext context) {
+    _lasttime = Provider.of<JobLog>(context, listen: true)
+        .lasttime(widget.jobType.type);
     return Container(
       margin: const EdgeInsets.all(10),
       child: ElevatedButton(
@@ -23,17 +33,55 @@ class InputButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           fixedSize: const Size.fromWidth(250),
           padding: const EdgeInsets.all(10),
-          backgroundColor: jobType.color.object,
+          backgroundColor: widget.jobType.color.object,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(6.0),
           ),
         ),
-        child: Text(
-          jobType.name,
-          style: const TextStyle(
-            fontSize: 25,
-            color: Colors.white,
-          ),
+        child: Column(
+          children: [
+            Text(
+              widget.jobType.name,
+              style: const TextStyle(
+                fontSize: 25,
+                color: Colors.white,
+              ),
+            ),
+            FutureBuilder<DateTime?>(
+              future: _lasttime,
+              builder: (ctx, dataSnapshot) {
+                switch (dataSnapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  default:
+                    if (dataSnapshot.hasError) {
+                      debugPrint("dataSnapshot.hasError");
+                      debugPrint(dataSnapshot.stackTrace.toString());
+
+                      return const TryLater();
+                    } else {
+                      final extracted = dataSnapshot.data;
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            extracted == null
+                                ? "-"
+                                : utils.getDateText(extracted),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -64,11 +112,12 @@ class InputButton extends StatelessWidget {
     );
   }
 
-  showAlert(BuildContext context) {
-    showDialog(
+  Future<void> showAlert(BuildContext context) async {
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
-        String message = "${jobType.name}${LocApp.translate(LKeys.isDone)}";
+        String message =
+            "${widget.jobType.name}${LocApp.translate(LKeys.isDone)}";
 
         return AlertDialog(
           title: Text(message),
@@ -78,15 +127,15 @@ class InputButton extends StatelessWidget {
               onPressed: () {
                 Provider.of<JobLog>(context, listen: false)
                     .addJob(Job(
-                  type: jobType.type,
+                  type: widget.jobType.type,
                   date: DateTime.now(),
                 ))
                     .then((_) {
                   Navigator.of(context).pushReplacementNamed(
                       RecordListScreen.routeName,
-                      arguments: jobType.type);
+                      arguments: widget.jobType.type);
                 });
-                _scheduleNotification(message, jobType.type);
+                _scheduleNotification(message, widget.jobType.type);
               },
             ),
             ElevatedButton(
@@ -94,7 +143,7 @@ class InputButton extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pushReplacementNamed(
                     RecordListScreen.routeName,
-                    arguments: jobType.type);
+                    arguments: widget.jobType.type);
               },
             ),
             ElevatedButton(

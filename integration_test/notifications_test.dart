@@ -78,7 +78,7 @@ void main() {
           'title': null,
           'body': "some job is done?",
           'calledAt': calledToday,
-          'repeatInterval': RepeatInterval.everyMinute.index,
+          'repeatInterval': RepeatInterval.daily.index,
           'platformSpecifics': Platform.isAndroid
               ? <String, Object?>{
                   "icon": null,

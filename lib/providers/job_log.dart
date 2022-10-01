@@ -14,6 +14,15 @@ class Job {
 class JobLog with ChangeNotifier {
   final DatabaseHelper dbHelper = DatabaseHelper.instance;
 
+  Future<DateTime?> lasttime(int type) async {
+    final joblogList = await queryWhere(type);
+    if (joblogList.isEmpty) {
+      return null;
+    } else {
+      return joblogList.first.date;
+    }
+  }
+
   Future<void> addJob(Job job) async {
     Map<String, dynamic> row = {
       DatabaseHelper.columnDate: job.date.toIso8601String(),
