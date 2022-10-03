@@ -6,6 +6,7 @@ import '../common/utils.dart' as utils;
 import '../providers/job_log.dart';
 import '../providers/job_type.dart';
 import '../models/color_select.dart';
+import '../screens/edit_record_screen.dart';
 
 class JobLogItem extends StatelessWidget {
   final Job job;
@@ -30,6 +31,17 @@ class JobLogItem extends StatelessWidget {
         width: 100,
         child: Row(
           children: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () {
+                Navigator.of(context).pushNamed(EditRecordScreen.routeName,
+                    arguments: Job(
+                      type: job.type,
+                      date: job.date,
+                    ));
+              },
+              color: Theme.of(context).primaryColor,
+            ),
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {

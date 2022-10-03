@@ -9,6 +9,7 @@ import './widgets/init_app.dart';
 import './screens/record_list_screen.dart';
 import './screens/job_list_screen.dart';
 import './screens/edit_job_screen.dart';
+import './screens/edit_record_screen.dart';
 import './constants.dart';
 
 void main() async {
@@ -55,6 +56,7 @@ class MyApp extends StatelessWidget {
           RecordListScreen.routeName: (context) => const RecordListScreen(),
           JobListScreen.routeName: (context) => const JobListScreen(),
           EditJobScreen.routeName: (context) => const EditJobScreen(),
+          EditRecordScreen.routeName: (context) => const EditRecordScreen(),
         },
         debugShowCheckedModeBanner: false,
         supportedLocales: supportedLocale,

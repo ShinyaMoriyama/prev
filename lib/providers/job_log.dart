@@ -14,6 +14,18 @@ class Job {
 class JobLog with ChangeNotifier {
   final DatabaseHelper dbHelper = DatabaseHelper.instance;
 
+  Future<void> updateJob(Job item) async {
+    final key = DatabaseHelper.columnType;
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnType: item.type,
+      DatabaseHelper.columnDate: item.date.toIso8601String(),
+    };
+    final rowsAffected =
+        await dbHelper.update(DatabaseHelper.tableJobLog, key, row);
+    debugPrint('updated $rowsAffected row(s)');
+    notifyListeners();
+  }
+
   Future<DateTime?> lasttime(int type) async {
     final joblogList = await queryWhere(type);
     if (joblogList.isEmpty) {
@@ -31,6 +43,13 @@ class JobLog with ChangeNotifier {
     final id = await dbHelper.insert(DatabaseHelper.tableJobLog, row);
     debugPrint('inserted row id: $id');
     notifyListeners();
+  }
+
+  Future<Job> queryWhereSingle(int jobType, DateTime date) async {
+    final allRows = await _query();
+    final rowsWhere =
+        allRows.where((job) => job.type == jobType && job.date == date).first;
+    return rowsWhere;
   }
 
   Future<List<Job>> queryWhere(int jobType) async {
