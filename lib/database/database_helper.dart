@@ -12,6 +12,7 @@ class DatabaseHelper {
   static String tableJobType = 'job_type';
   static String columnDate = 'date';
   static String columnType = 'type';
+  static String columnJobId = 'jobId';
   static String columnName = 'name';
   static String columnColor = 'color';
 
@@ -41,7 +42,8 @@ class DatabaseHelper {
   Future _onCreate(Database db, int version) async {
     await db.execute('''
           CREATE TABLE $tableJobLog (
-            $columnDate TEXT PRIMARY KEY,
+            $columnJobId INTEGER PRIMARY KEY,
+            $columnDate TEXT NOT NULL,
             $columnType INTEGER NOT NULL
           )
           ''');

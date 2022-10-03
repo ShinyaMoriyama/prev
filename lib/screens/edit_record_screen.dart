@@ -40,7 +40,7 @@ class _EditRecordScreenState extends State<EditRecordScreen> {
 
     final jobArg = ModalRoute.of(context)!.settings.arguments as Job;
     _editedJob = Provider.of<JobLog>(context, listen: false)
-        .queryWhereSingle(jobArg.type, jobArg.date)
+        .queryWhereSingle(jobArg.jobId, jobArg.type, jobArg.date)
         .then((value) {
       _isInit = false;
       return value;
@@ -100,10 +100,12 @@ class _EditRecordScreenState extends State<EditRecordScreen> {
                               );
 
                               if (pickedTime != null) {
+                                var jobId = dataSnapshot.data!.jobId;
                                 var jobDate = dataSnapshot.data!.date;
                                 var jobType = dataSnapshot.data!.type;
                                 setState(() {
                                   _editedJob = Future<Job>.value(Job(
+                                    jobId: jobId,
                                     date: DateTime(
                                       pickedTime.year,
                                       pickedTime.month,
@@ -133,10 +135,12 @@ class _EditRecordScreenState extends State<EditRecordScreen> {
                               );
 
                               if (pickedTime != null) {
+                                var jobId = dataSnapshot.data!.jobId;
                                 var jobDate = dataSnapshot.data!.date;
                                 var jobType = dataSnapshot.data!.type;
                                 setState(() {
                                   _editedJob = Future<Job>.value(Job(
+                                    jobId: jobId,
                                     date: DateTime(
                                       jobDate.year,
                                       jobDate.month,

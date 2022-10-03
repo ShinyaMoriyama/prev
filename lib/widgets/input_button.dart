@@ -126,10 +126,10 @@ class _InputButtonState extends State<InputButton> {
               child: const Text("YES"),
               onPressed: () {
                 Provider.of<JobLog>(context, listen: false)
-                    .addJob(Job(
+                    .addJob(
                   type: widget.jobType.type,
                   date: DateTime.now(),
-                ))
+                )
                     .then((_) {
                   Navigator.of(context).pushReplacementNamed(
                       RecordListScreen.routeName,

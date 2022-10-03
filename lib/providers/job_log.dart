@@ -2,10 +2,12 @@ import 'package:flutter/foundation.dart';
 import '../database/database_helper.dart';
 
 class Job {
+  int jobId;
   DateTime date;
   int type;
 
   Job({
+    required this.jobId,
     required this.date,
     required this.type,
   });
@@ -15,8 +17,9 @@ class JobLog with ChangeNotifier {
   final DatabaseHelper dbHelper = DatabaseHelper.instance;
 
   Future<void> updateJob(Job item) async {
-    final key = DatabaseHelper.columnType;
+    final key = DatabaseHelper.columnJobId;
     Map<String, dynamic> row = {
+      DatabaseHelper.columnJobId: item.jobId,
       DatabaseHelper.columnType: item.type,
       DatabaseHelper.columnDate: item.date.toIso8601String(),
     };
@@ -35,20 +38,24 @@ class JobLog with ChangeNotifier {
     }
   }
 
-  Future<void> addJob(Job job) async {
+  Future<void> addJob({required DateTime date, required int type}) async {
+    var allRows = await _query();
     Map<String, dynamic> row = {
-      DatabaseHelper.columnDate: job.date.toIso8601String(),
-      DatabaseHelper.columnType: job.type,
+      DatabaseHelper.columnJobId: allRows.length,
+      DatabaseHelper.columnDate: date.toIso8601String(),
+      DatabaseHelper.columnType: type,
     };
     final id = await dbHelper.insert(DatabaseHelper.tableJobLog, row);
     debugPrint('inserted row id: $id');
     notifyListeners();
   }
 
-  Future<Job> queryWhereSingle(int jobType, DateTime date) async {
+  Future<Job> queryWhereSingle(int jobId, int jobType, DateTime date) async {
     final allRows = await _query();
-    final rowsWhere =
-        allRows.where((job) => job.type == jobType && job.date == date).first;
+    final rowsWhere = allRows
+        .where((job) =>
+            job.jobId == jobId && job.type == jobType && job.date == date)
+        .first;
     return rowsWhere;
   }
 
@@ -68,6 +75,7 @@ class JobLog with ChangeNotifier {
     return allRows
         .map(
           (item) => Job(
+            jobId: int.parse(item['jobId'].toString()),
             date: DateTime.parse(item['date']),
             type: int.parse(item['type'].toString()),
           ),
@@ -75,10 +83,13 @@ class JobLog with ChangeNotifier {
         .toList();
   }
 
-  Future<void> deleteJob(DateTime date) async {
-    final key = DatabaseHelper.columnDate;
+  Future<void> deleteJob(int jobId) async {
+    final key = DatabaseHelper.columnJobId;
     final rowsDeleted = await dbHelper.delete(
-        DatabaseHelper.tableJobLog, key, date.toIso8601String());
+      DatabaseHelper.tableJobLog,
+      key,
+      jobId,
+    );
     debugPrint('deleted $rowsDeleted row(s): row $rowsDeleted');
     notifyListeners();
   }

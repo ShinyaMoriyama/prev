@@ -36,6 +36,7 @@ class JobLogItem extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pushNamed(EditRecordScreen.routeName,
                     arguments: Job(
+                      jobId: job.jobId,
                       type: job.type,
                       date: job.date,
                     ));
@@ -66,7 +67,7 @@ class JobLogItem extends StatelessWidget {
               child: const Text("YES"),
               onPressed: () {
                 Provider.of<JobLog>(context, listen: false)
-                    .deleteJob(job.date)
+                    .deleteJob(job.jobId)
                     .then((_) {
                   Navigator.of(context).pop();
                 });
