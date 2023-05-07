@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../localization/loc_app.dart';
 import '../screens/edit_job_screen.dart';
 import '../providers/job_type.dart';
@@ -45,43 +46,67 @@ class _JobListScreenState extends State<JobListScreen> {
           )
         ],
       ),
-      body: FutureBuilder<List<JobTypeItem>>(
-        future: _extractedJobType,
-        builder: (ctx, dataSnapshot) {
-          switch (dataSnapshot.connectionState) {
-            case ConnectionState.waiting:
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            default:
-              if (dataSnapshot.hasError) {
-                return AlertDialog(
-                  title: Text(LocApp.translate(LKeys.errorOccurred)),
-                  content: Text(LocApp.translate(LKeys.pleaseTryLater)),
-                  actions: <Widget>[
-                    ElevatedButton(
-                      child: const Text("OK"),
-                      onPressed: () => exit(0),
-                    ),
-                  ],
-                );
-              } else {
-                return ListView.separated(
-                  itemBuilder: (context, i) => JobTypeWidget(
-                    jobType: dataSnapshot.data![i],
-                    callBackSetState: (ctx) {
-                      setState(() {
-                        _extractedJobType = futureJobType(ctx);
-                      });
-                    },
-                  ),
-                  itemCount: dataSnapshot.data!.length,
-                  separatorBuilder: (context, _) => const Divider(),
-                  padding: const EdgeInsets.only(top: 10),
-                );
-              }
-          }
-        },
+      body: Column(
+        children: [
+          Expanded(
+            child: FutureBuilder<List<JobTypeItem>>(
+              future: _extractedJobType,
+              builder: (ctx, dataSnapshot) {
+                switch (dataSnapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  default:
+                    if (dataSnapshot.hasError) {
+                      return AlertDialog(
+                        title: Text(LocApp.translate(LKeys.errorOccurred)),
+                        content: Text(LocApp.translate(LKeys.pleaseTryLater)),
+                        actions: <Widget>[
+                          ElevatedButton(
+                            child: const Text("OK"),
+                            onPressed: () => exit(0),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return ListView.separated(
+                        itemBuilder: (context, i) => JobTypeWidget(
+                          jobType: dataSnapshot.data![i],
+                          callBackSetState: (ctx) {
+                            setState(() {
+                              _extractedJobType = futureJobType(ctx);
+                            });
+                          },
+                        ),
+                        itemCount: dataSnapshot.data!.length,
+                        separatorBuilder: (context, _) => const Divider(),
+                        padding: const EdgeInsets.only(top: 10),
+                      );
+                    }
+                }
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(40),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  child: Text(LocApp.translate(LKeys.privacyPolicy)),
+                  onTap: () async {
+                    if (!await launchUrl(Uri.parse(
+                        "https://prevapp.blog.jp/archives/5864150.html"))) {
+                      throw Exception(
+                          'Could not launch the Privacy Policy page.');
+                    }
+                  },
+                )
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

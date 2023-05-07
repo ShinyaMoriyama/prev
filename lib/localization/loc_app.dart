@@ -35,6 +35,7 @@ enum LKeys {
   orange,
   date,
   time,
+  privacyPolicy,
 }
 
 abstract class LocApp {
@@ -74,6 +75,7 @@ abstract class LocApp {
       LKeys.orange: "Orange",
       LKeys.date: "Date",
       LKeys.time: "Time",
+      LKeys.privacyPolicy: "Privacy Policy",
     },
     "ja": {
       LKeys.editJob: "お仕事の登録",
@@ -110,6 +112,7 @@ abstract class LocApp {
       LKeys.orange: "オレンジ",
       LKeys.date: "日付",
       LKeys.time: "時刻",
+      LKeys.privacyPolicy: "プライバシーポリシー",
     },
   };
 
